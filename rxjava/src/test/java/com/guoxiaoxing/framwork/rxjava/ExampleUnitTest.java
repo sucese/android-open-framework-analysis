@@ -1,4 +1,4 @@
-package com.guoxiaoxing.rxjava;
+package com.guoxiaoxing.framwork.rxjava;
 
 import org.junit.Test;
 

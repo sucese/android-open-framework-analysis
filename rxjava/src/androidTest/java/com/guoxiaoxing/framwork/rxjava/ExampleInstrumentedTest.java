@@ -1,4 +1,4 @@
-package com.guoxiaoxing.rxjava;
+package com.guoxiaoxing.framwork.rxjava;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.guoxiaoxing.rxjava", appContext.getPackageName());
+        assertEquals("com.guoxiaoxing.framwork.rxjava", appContext.getPackageName());
     }
 }

@@ -1,4 +1,4 @@
-package com.guoxiaoxing.rxjava;
+package com.guoxiaoxing.framwork.rxjava;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
