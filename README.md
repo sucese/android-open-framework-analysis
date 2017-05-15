@@ -78,9 +78,9 @@ Android的插件化技术也是近两年很火热的技术，涌现了很多优�
 - AndroidDynamicLoader
 - dynamic-load-apk
 - android-pluginmgr
-- DroidPlugin
+- DroidPlugin：A plugin framework on android,Run any third-party apk without installation, modification or repackage
 
-[DroidPlugin](https://github.com/DroidPluginTeam/DroidPlugin)：A plugin framework on android,Run any third-party apk without installation, modification or repackage
+[DroidPlugin](https://github.com/DroidPluginTeam/DroidPlugin)
 
 ## Android Hot Fix
 
