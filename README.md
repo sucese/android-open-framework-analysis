@@ -2,7 +2,8 @@
 
 本系列文章主要分析各类开源框架的实现，当然这些被选中的框架也是我们在技术选型中使用最广泛的框架。
 
-注：以下都是应用非常广泛的开源框架，所以可以作为大家技术选型的参考。
+注：以下都是应用非常广泛的开源框架，可以作为大家技术选型的参考。另外，由于精力有限，不可能对每个框架都做细致的分析
+，这些会挑选笔者有过深入实践，理解相对比较深入的框架进行分析。
 
 ## Networking
 
@@ -26,36 +27,45 @@
 
 ## Dependency Injection
 
-依赖注入我们使用最多的便是View注入框架ButterKnife以及依赖注入框架Dagger。
+依赖注入是为了解耦，常见的依赖注入框架有：
 
-[ButterKnife](https://github.com/JakeWharton/butterknife): Bind Android views and callbacks to fields and methods
+- ButterKnife: Bind Android views and callbacks to fields and methods
+- Dagger: A fast dependency injector for Android and Java
 
-[Dagger](https://github.com/google/dagger): A fast dependency injector for Android and Java
+[ButterKnife](https://github.com/JakeWharton/butterknife)
+
+[Dagger](https://github.com/google/dagger)
 
 ## RxJava
 
-RxJava系列主要用来完成异步编程。
+RxJava系列主要用来完成异步编程，对于Android开发而言常用的框架有：
 
-[RxJava](https://github.com/ReactiveX/RxJava): A library for composing asynchronous and event-based programs using observable sequences for the Java VM.
+- RxJava: A library for composing asynchronous and event-based programs using observable sequences for the Java VM.
+- RxAndroid: RxJava bindings for Android
 
-[RxAndroid](https://github.com/ReactiveX/RxAndroid): RxJava bindings for Android
+[RxJava](https://github.com/ReactiveX/RxJava)
+
+[RxAndroid](https://github.com/ReactiveX/RxAndroid)
 
 ## JSON
 
-在JSON解析上我们主要用的是gson，当然fastjson等其他框架也是不错的选择。
+JSON序列化与反序列化也是非常常见的操作，JSON解析常见的框架有：
 
-[gson](https://github.com/google/gson)：A Java serialization/deserialization library to convert Java Objects into JSON and back
+- gson：A Java serialization/deserialization library to convert Java Objects into JSON and back
+- fastjson: A fast JSON parser/generator for Java 
+
+[gson](https://github.com/google/gson)
 
 ## JavaScript
 
 随着前端技术的发展，跨平台开发技术也逐渐成熟起来，常见的跨平台框架有：
 
-- React Native
-- Weex
+- React Native: A framework for building native apps with React
+- Weex: A framework for building Mobile cross-platform UI
 
 我们公司目前使用的React Native。
 
-[react-native](https://github.com/facebook/react-native): A framework for building native apps with React
+[react-native](https://github.com/facebook/react-native)
 
 ## Android Plugin
 
