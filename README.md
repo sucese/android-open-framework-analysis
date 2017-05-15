@@ -10,8 +10,11 @@
 网络请求框架方面我们用的是khttp+etrofit，当然也有同学反映Retrofit使用起来不是很简便，这个时候你可以使用okhttp-OkGo，chuck等
 这些封装库来简化调用过程。
 
-[okhttp](https://github.com/square/okhttp): An HTTP+HTTP/2 client for Android and Java applications
-[retrofit](https://github.com/square/retrofit): Type-safe HTTP client for Android and Java by Square, Inc.
+- okhttp: An HTTP+HTTP/2 client for Android and Java applications
+- retrofit: Type-safe HTTP client for Android and Java by Square, Inc.
+
+[okhttp](https://github.com/square/okhttp)
+[retrofit](https://github.com/square/retrofit)
 
 ## Image Loader
 
