@@ -1,10 +1,13 @@
 apply plugin: 'com.android.application'
 
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
     defaultConfig {
-        applicationId "com.guoxiaoxing.framwork.rxjava"
+        applicationId "com.guoxiaoxing.rxjava.demo"
         minSdkVersion 15
         targetSdkVersion 25
         versionCode 1
@@ -24,7 +27,12 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
     compile 'com.android.support:appcompat-v7:25.3.1'
-    compile 'com.android.support.constraint:constraint-layout:1.0.2'
     testCompile 'junit:junit:4.12'
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+
+    compile 'com.orhanobut:logger:1.15'
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 }
