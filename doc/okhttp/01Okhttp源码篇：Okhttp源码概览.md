@@ -17,8 +17,55 @@
 
 源码版本：3.8.0
 
-Okhttp实现了Http、Http2以及WebSocket等协议，并把协议的各个部分封装成独立的模块，我们来看看各个模块的功能。
+跟以往一样，我们先来看个例子，从例子入手，逐步分析Okhttp的实现。
 
+**举例**
+
+```java
+/**
+ * 发送Get请求-异步
+ */
+private fun getAsynchronization(url: String) {
+    val okhttpClient: OkHttpClient = OkHttpClient.Builder().build()
+    val request: Request = Request.Builder()
+            .url(url)
+            .build()
+    okhttpClient.newCall(request).enqueue(object : Callback {
+
+        override fun onFailure(call: Call?, e: IOException?) {
+            Log.d(App.TAG, e.toString())
+        }
+
+        override fun onResponse(call: Call?, response: Response?) {
+            Log.d(App.TAG, response?.body()?.string())
+        }
+    })
+}
+
+/**
+ * 发送Get请求-同步
+ */
+private fun getSynchronization(url: String) {
+    val okhttpClient: OkHttpClient = OkHttpClient.Builder().build()
+    val request: Request = Request.Builder()
+            .url(url)
+            .build()
+    val response: Response = okhttpClient.newCall(request).execute()
+}
+```
+
+从这个例子我们可以看出，和我们打交道的有这么几个角色：
+
+- OkHttpClient
+- RequestBody
+- Request
+- Response
+
+我们来分别介绍下这几个角色以及与它们相关的类与接口。
+
+OkHttpClient
+
+>通信的客户端，用来统一管理发起请求与解析响应。
 
 Call
 
@@ -64,7 +111,6 @@ Interceptor最终连接成一个Interceptor.Chain。典型的责任链模式实�
 - BridgeInterceptor：负责把用户构造的请求转换为发送给服务器的请求，把服务器返回的响应转换为对用户友好的响应。
 - CacheInterceptor：负责读取缓存以及更新缓存。
 - ConnectInterceptor：负责与服务器建立连接。
-- etworkInterceptors：负责配置Okhttp。
 - CallServerInterceptor：负责从服务器读取响应的数据。
 
 ```java
