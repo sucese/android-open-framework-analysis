@@ -51,6 +51,10 @@ private fun getSynchronization(url: String) {
 我们通过创建OkHttpClient来发起Http请求，每个OkHttpClient都持有自己的线程池与连接池，为了更好的性能，我们通常把OkHttpClient
 写成单例，共享使用。
 
+请求处理流程图
+
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/okhttp/01/okhttp_request_structure.png"/>
+
 
 ### 1 OkHttpClient.newCall(Request request) 
 
