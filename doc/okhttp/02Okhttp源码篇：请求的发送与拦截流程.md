@@ -53,7 +53,7 @@ private fun getSynchronization(url: String) {
 
 请求处理流程图
 
-<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/okhttp/01/okhttp_request_structure.png"/>
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/okhttp/01/okhttp_request_flow.png"/>
 
 
 ### 1 OkHttpClient.newCall(Request request) 
