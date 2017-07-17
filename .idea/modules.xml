@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/android-open-framwork-analysis.iml" filepath="$PROJECT_DIR$/android-open-framwork-analysis.iml" />
       <module fileurl="file://$PROJECT_DIR$/fresco/fresco.iml" filepath="$PROJECT_DIR$/fresco/fresco.iml" />
       <module fileurl="file://$PROJECT_DIR$/gson/gson.iml" filepath="$PROJECT_DIR$/gson/gson.iml" />
+      <module fileurl="file://$PROJECT_DIR$/lrucache/lrucache.iml" filepath="$PROJECT_DIR$/lrucache/lrucache.iml" />
       <module fileurl="file://$PROJECT_DIR$/okhttp/okhttp.iml" filepath="$PROJECT_DIR$/okhttp/okhttp.iml" />
       <module fileurl="file://$PROJECT_DIR$/rxjava/rxjava.iml" filepath="$PROJECT_DIR$/rxjava/rxjava.iml" />
     </modules>

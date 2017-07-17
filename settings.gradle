@@ -1,1 +1,1 @@
-include ':rxjava', ':okhttp', ':gson', ':fresco'
+include ':rxjava', ':okhttp', ':gson', ':fresco', ':lrucache'

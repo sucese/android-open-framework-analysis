@@ -10,6 +10,7 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/fresco" />
             <option value="$PROJECT_DIR$/gson" />
+            <option value="$PROJECT_DIR$/lrucache" />
             <option value="$PROJECT_DIR$/okhttp" />
             <option value="$PROJECT_DIR$/rxjava" />
           </set>
