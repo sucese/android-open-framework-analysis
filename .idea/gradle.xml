@@ -12,6 +12,8 @@
             <option value="$PROJECT_DIR$/gson" />
             <option value="$PROJECT_DIR$/lrucache" />
             <option value="$PROJECT_DIR$/okhttp" />
+            <option value="$PROJECT_DIR$/okio" />
+            <option value="$PROJECT_DIR$/retrofit" />
             <option value="$PROJECT_DIR$/rxjava" />
           </set>
         </option>

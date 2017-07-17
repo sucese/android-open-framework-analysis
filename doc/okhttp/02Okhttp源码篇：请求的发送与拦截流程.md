@@ -11,9 +11,7 @@
 >文章首发于[Github](https://github.com/guoxiaoxing)，后续也会同步在[简书](http://www.jianshu.com/users/66a47e04215b/latest_articles)与
 [CSDN](http://blog.csdn.net/allenwells)等博客平台上。文章中如果有什么问题，欢迎发邮件与我交流，邮件可发至guoxiaoxingse@163.com。
 
->An HTTP+HTTP/2 client for Android and Java applications.
-
-我们还是从这个例子入手
+我们从一个简单的例子入手，一步步分析请求的发送与拦截流程。
 
 ```java
 /**
@@ -727,7 +725,7 @@ public final class CacheInterceptor implements Interceptor {
     
      @Override public Response intercept(Chain chain) throws IOException {
          
-        //如果配置了缓存，则从缓存中取一次，不保证存在。
+        //1 如果配置了缓存，则从缓存中取一次，不保证存在。
         Response cacheCandidate = cache != null
             ? cache.get(chain.request())
             : null;
@@ -832,9 +830,146 @@ public final class CacheInterceptor implements Interceptor {
 Okhttp的缓存是基于DiskLruCache也就是磁盘缓存来做的，CacheStrategy实现了Okhttp的缓存策略，它根据equest 与 cached response来决定
 使用缓存、网络还是两者都用。
 
+1 如果配置了缓存，则从缓存中取一次，不保证存在。
 
+CacheInterceptor主要用来处理缓存，更多关于缓存机制的解析可以参见[]()
 
+我们再接着来看ConnectInterceptor。
 
 ### 10 ConnectInterceptor.intercept(Chain chain) 
 
+```java
+public final class ConnectInterceptor implements Interceptor {
+    
+      @Override public Response intercept(Chain chain) throws IOException {
+        RealInterceptorChain realChain = (RealInterceptorChain) chain;
+        Request request = realChain.request();
+        StreamAllocation streamAllocation = realChain.streamAllocation();
+    
+        // We need the network to satisfy this request. Possibly for validating a conditional GET.
+        boolean doExtensiveHealthChecks = !request.method().equals("GET");
+        HttpCodec httpCodec = streamAllocation.newStream(client, doExtensiveHealthChecks);
+        RealConnection connection = streamAllocation.connection();
+    
+        return realChain.proceed(request, streamAllocation, httpCodec, connection);
+      }
+}
+```
+
+RealInterceptorChain构造函数有五个主要参数：
+
+- List<Interceptor>
+- Request
+- StreamAllocation
+- HttpCodec
+- RealConnection
+
+```java
+  public RealInterceptorChain(List<Interceptor> interceptors, StreamAllocation streamAllocation,
+      HttpCodec httpCodec, RealConnection connection, int index, Request request) {
+    this.interceptors = interceptors;
+    this.connection = connection;
+    this.streamAllocation = streamAllocation;
+    this.httpCodec = httpCodec;
+    this.index = index;
+    this.request = request;
+  }
+```
+List<Interceptor>在RealCall中创建，StreamAllocation在RetryAndFollowUpInterceptor中创建，而HttpCodec与RealConnection则在ConnectInterceptor中创建。
+
+- HttpCodec：用来编码HTTP requests和解码HTTP responses
+- RealConnection：连接对象，负责发起与服务器的连接。
+
+ConnectInterceptor主要功能就是发起向服务器发起连接，关于Okhttp的连接机制的详细解析可以参见[]()
+
 ### 11 CallServerInterceptor.intercept(Chain chain) 
+
+```java
+public final class CallServerInterceptor implements Interceptor {
+    
+    @Override public Response intercept(Chain chain) throws IOException {
+        RealInterceptorChain realChain = (RealInterceptorChain) chain;
+        HttpCodec httpCodec = realChain.httpStream();
+        StreamAllocation streamAllocation = realChain.streamAllocation();
+        RealConnection connection = (RealConnection) realChain.connection();
+        Request request = realChain.request();
+    
+        long sentRequestMillis = System.currentTimeMillis();
+        //1 写入请求头 
+        httpCodec.writeRequestHeaders(request);
+    
+        Response.Builder responseBuilder = null;
+        if (HttpMethod.permitsRequestBody(request.method()) && request.body() != null) {
+          // If there's a "Expect: 100-continue" header on the request, wait for a "HTTP/1.1 100
+          // Continue" response before transmitting the request body. If we don't get that, return what
+          // we did get (such as a 4xx response) without ever transmitting the request body.
+          if ("100-continue".equalsIgnoreCase(request.header("Expect"))) {
+            httpCodec.flushRequest();
+            responseBuilder = httpCodec.readResponseHeaders(true);
+          }
+    
+          //2 写入请求体
+          if (responseBuilder == null) {
+            // Write the request body if the "Expect: 100-continue" expectation was met.
+            Sink requestBodyOut = httpCodec.createRequestBody(request, request.body().contentLength());
+            BufferedSink bufferedRequestBody = Okio.buffer(requestBodyOut);
+            request.body().writeTo(bufferedRequestBody);
+            bufferedRequestBody.close();
+          } else if (!connection.isMultiplexed()) {
+            // If the "Expect: 100-continue" expectation wasn't met, prevent the HTTP/1 connection from
+            // being reused. Otherwise we're still obligated to transmit the request body to leave the
+            // connection in a consistent state.
+            streamAllocation.noNewStreams();
+          }
+        }
+    
+        httpCodec.finishRequest();
+    
+        //3 读取响应头
+        if (responseBuilder == null) {
+          responseBuilder = httpCodec.readResponseHeaders(false);
+        }
+    
+        Response response = responseBuilder
+            .request(request)
+            .handshake(streamAllocation.connection().handshake())
+            .sentRequestAtMillis(sentRequestMillis)
+            .receivedResponseAtMillis(System.currentTimeMillis())
+            .build();
+    
+        //4 读取响应体
+        int code = response.code();
+        if (forWebSocket && code == 101) {
+          // Connection is upgrading, but we need to ensure interceptors see a non-null response body.
+          response = response.newBuilder()
+              .body(Util.EMPTY_RESPONSE)
+              .build();
+        } else {
+          response = response.newBuilder()
+              .body(httpCodec.openResponseBody(response))
+              .build();
+        }
+    
+        if ("close".equalsIgnoreCase(response.request().header("Connection"))
+            || "close".equalsIgnoreCase(response.header("Connection"))) {
+          streamAllocation.noNewStreams();
+        }
+    
+        if ((code == 204 || code == 205) && response.body().contentLength() > 0) {
+          throw new ProtocolException(
+              "HTTP " + code + " had non-zero Content-Length: " + response.body().contentLength());
+        }
+    
+        return response;
+      }
+}
+```
+
+我们通过ConnectInterceptor已经连接到服务器了，接下来我们就是写入请求数据以及读出返回数据了。整个流程：
+
+1. 写入请求头 
+2. 写入请求体 
+3. 读取响应头 
+4. 读取响应体 
+
+更多关于请求编码与响应解码的实现原理可以参见[]()

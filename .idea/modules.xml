@@ -7,6 +7,8 @@
       <module fileurl="file://$PROJECT_DIR$/gson/gson.iml" filepath="$PROJECT_DIR$/gson/gson.iml" />
       <module fileurl="file://$PROJECT_DIR$/lrucache/lrucache.iml" filepath="$PROJECT_DIR$/lrucache/lrucache.iml" />
       <module fileurl="file://$PROJECT_DIR$/okhttp/okhttp.iml" filepath="$PROJECT_DIR$/okhttp/okhttp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/okio/okio.iml" filepath="$PROJECT_DIR$/okio/okio.iml" />
+      <module fileurl="file://$PROJECT_DIR$/retrofit/retrofit.iml" filepath="$PROJECT_DIR$/retrofit/retrofit.iml" />
       <module fileurl="file://$PROJECT_DIR$/rxjava/rxjava.iml" filepath="$PROJECT_DIR$/rxjava/rxjava.iml" />
     </modules>
   </component>
