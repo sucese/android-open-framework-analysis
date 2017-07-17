@@ -1,1 +1,1 @@
-include ':rxjava', ':okhttp', ':gson', ':fresco', ':lrucache', ':okio', ':retrofit'
+include ':rxjava', ':okhttp', ':gson', ':fresco', ':lrucache', ':okio', ':retrofit', ':leakcanary'
