@@ -15,18 +15,18 @@
 
 本系列文章主要分析Android平台各类主流开源框架的原理与实践。
 
-|库                                       |描述                                            |状态
-|:----------------------------------------|:----------------------------------------------|:---------------|
-|[okio](https://github.com/square/okio)|A modern I/O API for Java|进行中
-|[okhttp](https://github.com/square/okhttp)|An HTTP+HTTP/2 client for Android and Java applications|已完成
-|[retrofit](https://github.com/square/retrofit)|Type-safe HTTP client for Android and Java by Square, Inc.|未开始
-|[gson](https://github.com/google/gson)|A Java serialization/deserialization library to convert Java Objects into JSON and back|未开始
-|[fresco](https://github.com/facebook/fresco)|An Android library for managing images and the memory they use|未开始
-|[realm-java](https://github.com/realm/realm-java)|Realm is a mobile database: a replacement for SQLite & ORMs|未开始
-|[RxJava](https://github.com/ReactiveX/RxJava)|A library for composing asynchronous and event-based programs using observable sequences for the Java VM|未开始
-|[react-native](https://github.com/facebook/react-native)|A framework for building native apps with React|未开始
-|[DiskLruCache](https://github.com/JakeWharton/DiskLruCache)|Java implementation of a Disk-based LRU cache which specifically targets Android compatibility|未开始
-|[leakcanary](https://github.com/square/leakcanary)|A memory leak detection library for Android and Java|未开始
+|库                                       |描述                                            |
+|:----------------------------------------|:----------------------------------------------|
+|[okio](https://github.com/square/okio)|A modern I/O API for Java
+|[okhttp](https://github.com/square/okhttp)|An HTTP+HTTP/2 client for Android and Java applications
+|[retrofit](https://github.com/square/retrofit)|Type-safe HTTP client for Android and Java by Square, Inc
+|[gson](https://github.com/google/gson)|A Java serialization/deserialization library to convert Java Objects into JSON and back
+|[fresco](https://github.com/facebook/fresco)|An Android library for managing images and the memory they use
+|[realm-java](https://github.com/realm/realm-java)|Realm is a mobile database: a replacement for SQLite & ORMs
+|[RxJava](https://github.com/ReactiveX/RxJava)|A library for composing asynchronous and event-based programs using observable sequences for the Java VM
+|[react-native](https://github.com/facebook/react-native)|A framework for building native apps with React
+|[DiskLruCache](https://github.com/JakeWharton/DiskLruCache)|Java implementation of a Disk-based LRU cache which specifically targets Android compatibility
+|[leakcanary](https://github.com/square/leakcanary)|A memory leak detection library for Android and Java
 
 **okhttp**
 
