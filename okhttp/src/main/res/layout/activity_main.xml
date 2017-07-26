@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp"
-    tools:context="com.guoxiaoxing.okhttp.demo.MainActivity">
+    tools:mContext="com.guoxiaoxing.okhttp.demo.MainActivity">
 
     <Button
         android:id="@+id/btn_send_get_request"
