@@ -1,15 +1,10 @@
-# RxJava实践：ReactiveX基础理论
+# RxJava实践篇：RxJava2概述
 
->郭孝星，非著名程序员，主要从事Android平台基础架构与中间件方面的工作，热爱编程，技术栈主要涉及以下几个方面
->
->- Android/Linux
->- Java/Kotlin/JVM
->- Python
->- JavaScript/React/ReactNative
->- DataStructure/Algorithm
->
->文章首发于[Github](https://github.com/guoxiaoxing)，后续也会同步在[简书](http://www.jianshu.com/users/66a47e04215b/latest_articles)与
-[CSDN](http://blog.csdn.net/allenwells)等博客平台上。文章中如果有什么问题，欢迎发邮件与我交流，邮件可发至guoxiaoxingse@163.com。
+**关于作者**
+
+>郭孝星，非著名程序员，主要从事Android平台基础架构与中间件方面的工作，欢迎交流技术方面的问题，可以去我的[Github](https://github.com/guoxiaoxing)提交Issue或者发邮件至guoxiaoxingse@163.com与我联系。
+
+>A library for composing asynchronous and event-based programs using observable sequences for the Java VM.
 
 要更深入的理解RxJava/RxAndriod的实践原理，我们就要先理解ReactiveX相关基础理论。
 
@@ -37,4 +32,10 @@ ReactiveX的优点：
 那一天人们又回想起了都多层回调与迷之缩进支配的恐惧。☹️
 ```
 
-🤧
+
+
+
+## 附录
+
+- [Rxjava官方文档](http://reactivex.io/intro.html)
+- [ReactiveX官方文档中文版](https://mcxiaoke.gitbooks.io/rxdocs/content/Intro.html)
