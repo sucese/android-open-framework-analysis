@@ -9,6 +9,8 @@
 
 [create](http://reactivex.io/documentation/operators/create.html)用于闯将一个呗观察者对象Obserable。
 
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/rxjava/operator_create.png"/>
+
 ```java
 Observable.create(new ObservableOnSubscribe<String>() {
     @Override
@@ -44,9 +46,15 @@ Observable.create(new ObservableOnSubscribe<String>() {
 });
 ```
 
+输出打印
+
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/rxjava/log_operator_create.png"/>
+
 ## map
 
 [map](http://reactivex.io/documentation/operators/map.html)
+
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/rxjava/operator_map.png"/>
 
 ```java
 Observable.create(new ObservableOnSubscribe<String>() {
@@ -71,4 +79,8 @@ Observable.create(new ObservableOnSubscribe<String>() {
 
     }
 });
+
+输出打印
+
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/rxjava/log_operator_map.png"/>
 ```
