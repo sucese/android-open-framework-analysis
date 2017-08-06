@@ -163,3 +163,90 @@ Observable.concat(Observable.just(1, 2, 3), Observable.just(4, 5, 6))
 输出打印
 
 <img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/rxjava/log_operator_concat.png"/>
+
+## flatMap
+
+[flatMap](http://reactivex.io/documentation/operators/flatmap.html)将一个Observable的多个事件序列转换为多个Observable，在将这些Observables合并为一个Observable，注意
+它并不保证合并后事件保持原有的顺序。
+
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/rxjava/operator_flatMap.png"/>
+
+```java
+Observable.create(new ObservableOnSubscribe<String>() {
+
+    @Override
+    public void subscribe(ObservableEmitter<String> e) throws Exception {
+
+        e.onNext("a");
+        e.onNext("b");
+        e.onNext("c");
+
+    }
+}).flatMap(new Function<String, ObservableSource<String>>() {
+    @Override
+    public ObservableSource<String> apply(String s) throws Exception {
+        List<String> list = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            list.add(s + "_" + i);
+        }
+        //加上随机时间的延迟，观察事件序列的返回顺序
+        int delayTime = (int) (1 + Math.random() * 10);
+        return Observable.fromIterable(list).delay(delayTime, TimeUnit.MILLISECONDS);
+    }
+}).subscribeOn(Schedulers.newThread())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(new Consumer<String>() {
+            @Override
+            public void accept(String s) throws Exception {
+                Log.d(TAG, "accept: " + s);
+            }
+        });
+```
+
+输出打印
+
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/rxjava/log_operator_flatMap.png"/>
+
+
+## concatMap
+
+[concatMap](http://reactivex.io/documentation/operators/flatmap.html)将一个Observable的多个事件序列转换为多个Observable，在将这些Observables合并为一个Observable，注意
+它保证合并后事件保持原有的顺序。
+
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/rxjava/operator_concatMap.png"/>
+
+
+```java
+Observable.create(new ObservableOnSubscribe<String>() {
+
+    @Override
+    public void subscribe(ObservableEmitter<String> e) throws Exception {
+
+        e.onNext("a");
+        e.onNext("b");
+        e.onNext("c");
+
+    }
+}).concatMap(new Function<String, ObservableSource<String>>() {
+    @Override
+    public ObservableSource<String> apply(String s) throws Exception {
+        List<String> list = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            list.add(s + "_" + i);
+        }
+        //加上随机时间的延迟，观察事件序列的返回顺序
+        int delayTime = (int) (1 + Math.random() * 10);
+        return Observable.fromIterable(list).delay(delayTime, TimeUnit.MILLISECONDS);
+    }
+}).subscribeOn(Schedulers.newThread())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(new Consumer<String>() {
+            @Override
+            public void accept(String s) throws Exception {
+                Log.d(TAG, "accept: " + s);
+            }
+        });
+```
+输出打印
+
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/rxjava/log_operator_concatMap.png"/>

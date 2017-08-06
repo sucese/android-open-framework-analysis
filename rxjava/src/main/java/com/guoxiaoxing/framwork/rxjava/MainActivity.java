@@ -2,6 +2,7 @@ package com.guoxiaoxing.framwork.rxjava;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.AndroidException;
 import android.util.Log;
 import android.view.View;
 
@@ -9,14 +10,22 @@ import com.orhanobut.logger.Logger;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
+import io.reactivex.Scheduler;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -31,6 +40,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.btn_opertor_map).setOnClickListener(this);
         findViewById(R.id.btn_opertor_zip).setOnClickListener(this);
         findViewById(R.id.btn_opertor_concat).setOnClickListener(this);
+        findViewById(R.id.btn_opertor_flatmap).setOnClickListener(this);
+        findViewById(R.id.btn_opertor_concatmap).setOnClickListener(this);
     }
 
     @Override
@@ -47,6 +58,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.btn_opertor_concat:
                 concat();
+                break;
+            case R.id.btn_opertor_flatmap:
+                flatMap();
+                break;
+            case R.id.btn_opertor_concatmap:
+                concatMap();
                 break;
             default:
                 break;
@@ -168,4 +185,67 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 });
     }
 
+    private void flatMap() {
+        Observable.create(new ObservableOnSubscribe<String>() {
+
+            @Override
+            public void subscribe(ObservableEmitter<String> e) throws Exception {
+
+                e.onNext("a");
+                e.onNext("b");
+                e.onNext("c");
+
+            }
+        }).flatMap(new Function<String, ObservableSource<String>>() {
+            @Override
+            public ObservableSource<String> apply(String s) throws Exception {
+                List<String> list = new ArrayList<>();
+                for (int i = 0; i < 3; i++) {
+                    list.add(s + "_" + i);
+                }
+                //加上随机时间的延迟，观察事件序列的返回顺序
+                int delayTime = (int) (1 + Math.random() * 10);
+                return Observable.fromIterable(list).delay(delayTime, TimeUnit.MILLISECONDS);
+            }
+        }).subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<String>() {
+                    @Override
+                    public void accept(String s) throws Exception {
+                        Log.d(TAG, "accept: " + s);
+                    }
+                });
+    }
+
+    private void concatMap() {
+        Observable.create(new ObservableOnSubscribe<String>() {
+
+            @Override
+            public void subscribe(ObservableEmitter<String> e) throws Exception {
+
+                e.onNext("a");
+                e.onNext("b");
+                e.onNext("c");
+
+            }
+        }).concatMap(new Function<String, ObservableSource<String>>() {
+            @Override
+            public ObservableSource<String> apply(String s) throws Exception {
+                List<String> list = new ArrayList<>();
+                for (int i = 0; i < 3; i++) {
+                    list.add(s + "_" + i);
+                }
+                //加上随机时间的延迟，观察事件序列的返回顺序
+                int delayTime = (int) (1 + Math.random() * 10);
+                return Observable.fromIterable(list).delay(delayTime, TimeUnit.MILLISECONDS);
+            }
+        }).subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<String>() {
+                    @Override
+                    public void accept(String s) throws Exception {
+                        Log.d(TAG, "accept: " + s);
+                    }
+                });
+    }
 }

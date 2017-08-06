@@ -41,4 +41,20 @@
         android:text="concat"
         android:textAllCaps="false" />
 
+    <Button
+        android:id="@+id/btn_opertor_flatmap"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="flatmap"
+        android:textAllCaps="false" />
+
+    <Button
+        android:id="@+id/btn_opertor_concatmap"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="concatmap"
+        android:textAllCaps="false" />
+
 </LinearLayout>
