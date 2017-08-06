@@ -25,4 +25,20 @@
         android:text="map"
         android:textAllCaps="false" />
 
+    <Button
+        android:id="@+id/btn_opertor_zip"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="zip"
+        android:textAllCaps="false" />
+
+    <Button
+        android:id="@+id/btn_opertor_concat"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="concat"
+        android:textAllCaps="false" />
+
 </LinearLayout>

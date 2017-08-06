@@ -7,11 +7,14 @@ import android.view.View;
 
 import com.orhanobut.logger.Logger;
 
+import org.jetbrains.annotations.NotNull;
+
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.BiFunction;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 
@@ -26,6 +29,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         findViewById(R.id.btn_opertor_create).setOnClickListener(this);
         findViewById(R.id.btn_opertor_map).setOnClickListener(this);
+        findViewById(R.id.btn_opertor_zip).setOnClickListener(this);
+        findViewById(R.id.btn_opertor_concat).setOnClickListener(this);
     }
 
     @Override
@@ -37,6 +42,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.btn_opertor_map:
                 map();
                 break;
+            case R.id.btn_opertor_zip:
+                zip();
+                break;
+            case R.id.btn_opertor_concat:
+                concat();
+                break;
             default:
                 break;
         }
@@ -46,12 +57,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(ObservableEmitter<String> e) throws Exception {
-                e.onNext("1");
-                e.onNext("2");
-                e.onNext("3");
+                e.onNext("a");
+                e.onNext("b");
+                e.onNext("c");
                 e.onComplete();
                 //onComplete()调用后事件会继续被发送，但是不会被接收
-                e.onNext("4");
+                e.onNext("d");
             }
         }).subscribe(new Observer<String>() {
             @Override
@@ -81,12 +92,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(ObservableEmitter<String> e) throws Exception {
-                e.onNext("1");
-                e.onNext("2");
-                e.onNext("3");
+                e.onNext("a");
+                e.onNext("b");
+                e.onNext("c");
                 e.onComplete();
                 //onComplete()调用后事件会继续被发送，但是不会被接收
-                e.onNext("4");
+                e.onNext("d");
             }
         }).map(new Function<String, String>() {
             @Override
@@ -101,4 +112,60 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
     }
+
+    private void zip() {
+
+        Observable.zip(getStringObservable(), getIntegerObservable(), new BiFunction<String, Integer, String>() {
+            @Override
+            public String apply(@NotNull String s, @NotNull Integer integer) throws Exception {
+
+                return s + "_" + integer;
+            }
+        }).subscribe(new Consumer<String>() {
+            @Override
+            public void accept(String s) throws Exception {
+                Log.d(TAG, "accept: " + s);
+            }
+        });
+    }
+
+    private Observable<String> getStringObservable() {
+        return Observable.create(new ObservableOnSubscribe<String>() {
+
+            @Override
+            public void subscribe(ObservableEmitter<String> e) throws Exception {
+                e.onNext("a");
+                e.onNext("b");
+                e.onNext("c");
+                e.onComplete();
+                e.onNext("d");
+            }
+        });
+    }
+
+    private Observable<Integer> getIntegerObservable() {
+        return Observable.create(new ObservableOnSubscribe<Integer>() {
+
+            @Override
+            public void subscribe(ObservableEmitter<Integer> e) throws Exception {
+                e.onNext(1);
+                e.onNext(2);
+                e.onNext(3);
+                e.onComplete();
+                e.onNext(4);
+            }
+        });
+    }
+
+    private void concat() {
+        //按照事件的发出顺序进行连接
+        Observable.concat(Observable.just(1, 2, 3), Observable.just(4, 5, 6))
+                .subscribe(new Consumer<Integer>() {
+                    @Override
+                    public void accept(Integer integer) throws Exception {
+                        Log.d(TAG, "accept: " + integer);
+                    }
+                });
+    }
+
 }
