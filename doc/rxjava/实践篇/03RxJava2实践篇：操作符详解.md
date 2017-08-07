@@ -248,4 +248,372 @@ Observable.create(new ObservableOnSubscribe<String>() {
 ```
 输出打印
 
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/rxjava/operator_distinct.png"/>
+
+## distinct
+
+[distinct](http://reactivex.io/documentation/operators/distinct.html)用于去掉重复的事件。
+
+```java
+Observable.just(1, 1, 2, 3, 3, 4, 5)
+        .distinct()
+        .subscribe(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer integer) throws Exception {
+                Log.d(TAG, "accept: " + integer);
+            }
+        });
+```
+
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/rxjava/log_operator_distinct.png"/>
+
+
+输出打印
+
 <img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/rxjava/log_operator_concatMap.png"/>
+
+## filter
+
+[filter](http://reactivex.io/documentation/operators/filter.html)按照给定的条件对事件进行过滤。
+
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/rxjava/operator_filter.png"/>
+
+```java
+Observable.just(-1, 4, 2, 7, 4, 3, 9)
+        .filter(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer integer) throws Exception {
+                return integer > 3;
+            }
+        }).subscribe(new Consumer<Integer>() {
+    @Override
+    public void accept(Integer integer) throws Exception {
+        Log.d(TAG, "accept: " + integer);
+    }
+});
+```
+
+输出打印
+
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/rxjava/log_operator_filter.png"/>
+
+## buffer
+
+[buffer]()用来拆分事件流，它有个方法buffer(int count, int skip)，它按照步长skip将事件流分组，每组最大不超过count。
+
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/rxjava/operator_buffer.png"/>
+
+```java
+Observable.just(1, 2, 3, 4, 5)
+        .buffer(3, 1)
+        .subscribe(new Consumer<List<Integer>>() {
+            @Override
+            public void accept(List<Integer> integers) throws Exception {
+                Log.d(TAG, "accept: integers.size() " + integers.size());
+                for(Integer integer : integers){
+                    Log.d(TAG, "accept: " + integer);
+                }
+            }
+        });
+```
+输出打印
+
+skip = 1
+
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/rxjava/log_operator_buffer_1.png"/>
+
+skip = 2
+
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/rxjava/log_operator_buffer_2.png"/>
+
+skip = 3
+
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/rxjava/log_operator_buffer_3.png"/>
+
+## timer
+
+[timer](http://reactivex.io/documentation/operators/timer.html)用来实现定时任务，它默认在新线程中开启。
+
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/rxjava/operator_timer.png"/>
+
+```java
+Log.d(TAG, "time: " + System.currentTimeMillis());
+//从触发任务到任务开启间隔了1秒
+Observable.timer(1, TimeUnit.SECONDS)
+        .subscribe(new Consumer<Long>() {
+            @Override
+            public void accept(Long aLong) throws Exception {
+                Log.d(TAG, "accept: " + aLong);
+                Log.d(TAG, "time: " + System.currentTimeMillis());
+            }
+        });
+```
+
+输出打印
+
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/rxjava/log_operator_timer.png"/>
+
+
+## interval
+
+[interval](http://reactivex.io/documentation/operators/interval.html)根据指定的间隔创建周期任务。
+
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/rxjava/operator_interval.png"/>
+
+```java
+Log.d(TAG, "time: " + System.currentTimeMillis());
+//延时2秒手，每隔1秒触发一次任务
+Observable.interval(2, 1, TimeUnit.SECONDS)
+        .subscribe(new Consumer<Long>() {
+            @Override
+            public void accept(Long aLong) throws Exception {
+                Log.d(TAG, "accept: " + aLong);
+                Log.d(TAG, "time: " + System.currentTimeMillis());
+            }
+        });
+```
+
+输出打印
+
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/rxjava/log_operator_interval.png"/>
+
+## skip
+
+[skip](http://reactivex.io/documentation/operators/skip.html)跳过指定个数的任务。
+
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/rxjava/operator_skip.png"/>
+
+```java
+Observable.just(1, 2, 3, 4, 5)
+        .skip(2)
+        .subscribe(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer integer) throws Exception {
+                Log.d(TAG, "accept: " + integer);
+            }
+        });
+```
+
+输出打印
+
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/rxjava/log_operator_skip.png"/>
+
+## take
+
+[take](http://reactivex.io/documentation/operators/take.html)表示最大接收指定的事件数量。
+
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/rxjava/operator_take.png"/>
+
+```java
+Observable.just(1, 2, 3, 4, 5)
+        .take(2)
+        .subscribe(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer integer) throws Exception {
+                Log.d(TAG, "accept: " + integer);
+            }
+        });
+```
+输出打印
+
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/rxjava/log_operator_take.png"/>
+
+## single
+
+single只会接收一个事件，当然它也没有onNext()回调方法。
+
+```java
+Single.just(1).subscribe(new SingleObserver<Integer>() {
+    @Override
+    public void onSubscribe(Disposable d) {
+        Log.d(TAG, "onSubscribe: " + d.isDisposed());
+    }
+
+    @Override
+    public void onSuccess(Integer integer) {
+        Log.d(TAG, "onSuccess: " + integer);
+    }
+
+    @Override
+    public void onError(Throwable e) {
+
+    }
+});
+```
+
+输出打印
+
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/rxjava/log_operator_single.png"/>
+
+## debounce
+
+[debounce](http://reactivex.io/documentation/operators/debounce.html)去除发送频率过来的事件。
+
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/rxjava/operator_debounce.png"/>
+
+```java
+Observable.create(new ObservableOnSubscribe<Integer>() {
+
+    @Override
+    public void subscribe(ObservableEmitter<Integer> e) throws Exception {
+
+        Thread.sleep(600);
+        e.onNext(1);
+
+        Thread.sleep(300);
+        e.onNext(2);
+
+        Thread.sleep(600);
+        e.onNext(3);
+
+        Thread.sleep(400);
+        e.onNext(4);
+
+        Thread.sleep(700);
+        e.onNext(5);
+
+        e.onComplete();
+    }
+}).debounce(500, TimeUnit.MILLISECONDS)
+        .subscribe(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer integer) throws Exception {
+                Log.d(TAG, "time: " + System.currentTimeMillis());
+                Log.d(TAG, "accept: " + integer);
+            }
+        });
+```
+
+输出打印
+
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/rxjava/log_operator_debounce.png"/>
+
+## defer
+
+[defer](http://reactivex.io/documentation/operators/defer.html)是一个懒加载的操作符，只有当发生订阅的时候才会产生一个Observable，不订阅就不会产生Observable。
+
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/rxjava/operator_defer.png"/>
+
+```java
+ Observable.defer(new Callable<ObservableSource<Integer>>() {
+        @Override
+        public ObservableSource<Integer> call() throws Exception {
+            return Observable.just(1, 2, 3, 4, 5);
+        }
+    }).subscribe(new Observer<Integer>() {
+        @Override
+        public void onSubscribe(Disposable d) {
+            Log.d(TAG, "onSubscribe: " + d.isDisposed());
+        }
+
+        @Override
+        public void onNext(Integer integer) {
+            Log.d(TAG, "onNext: " + integer);
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            Log.d(TAG, "onError: " + e.getMessage());
+        }
+
+        @Override
+        public void onComplete() {
+            Log.d(TAG, "onComplete");
+        }
+    });
+```
+
+输出打印
+
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/rxjava/log_operator_defer.png"/>
+
+## last
+
+[last](http://reactivex.io/documentation/operators/last.html)取出符合条件的最后一项。
+
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/rxjava/operator_last.png"/>
+
+```java
+Observable.just(1, 2,3)
+        .last(4)
+        .subscribe(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer integer) throws Exception {
+                Log.d(TAG, "accept: " + integer);
+            }
+        });
+```
+
+输出打印
+
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/rxjava/log_operator_last.png"/>
+
+## merge
+
+[merge](http://reactivex.io/documentation/operators/merge.html)用来合并多个Observable，它并不保证合并后的顺序。
+
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/rxjava/operator_merge.png"/>
+
+```java
+Observable.merge(Observable.just(1, 2, 3), Observable.just(4, 5))
+        .subscribe(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer integer) throws Exception {
+                Log.d(TAG, "accept: " + integer);
+            }
+        });
+```
+
+输出打印
+
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/rxjava/log_operator_merge.png"/>
+
+## reduce
+
+[reduce](http://reactivex.io/documentation/operators/reduce.html)根据指定的函数来处理事件序列，最终返回处理的结果。
+
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/rxjava/operator_reduce.png"/>
+
+```java
+Observable.just(1, 2, 3)
+        .reduce(new BiFunction<Integer, Integer, Integer>() {
+            @Override
+            public Integer apply(Integer integer, Integer integer2) throws Exception {
+                return integer + integer2;
+            }
+        }).subscribe(new Consumer<Integer>() {
+    @Override
+    public void accept(Integer integer) throws Exception {
+        Log.d(TAG, "accept: " + integer);
+    }
+});
+```
+
+输出打印
+
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/rxjava/log_operator_reduce.png"/>
+
+## scan
+
+[scan](http://reactivex.io/documentation/operators/scan.html)根据指定的函数来处理事件序列，返回每步处理的结果。
+
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/rxjava/operator_scan.png"/>
+
+```java
+Observable.just(1, 2, 3)
+        .scan(new BiFunction<Integer, Integer, Integer>() {
+            @Override
+            public Integer apply(Integer integer, Integer integer2) throws Exception {
+                return integer + integer2;
+            }
+        }).subscribe(new Consumer<Integer>() {
+    @Override
+    public void accept(Integer integer) throws Exception {
+        Log.d(TAG, "accept: " + integer);
+    }
+});
+```
+
+输出打印
+
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/rxjava/log_operator_scan.png"/>
