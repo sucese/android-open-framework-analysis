@@ -205,15 +205,14 @@ Observable.create(new ObservableOnSubscribe<String>() {
 
 输出打印
 
-<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/rxjava/log_operator_flatMap.png"/>
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/blob/c0a9689a008515dc04e7d6f99f29345753210c7b/art/rxjava/log_operator_flatmap.png"/>
 
 ## concatMap
 
 [concatMap](http://reactivex.io/documentation/operators/flatmap.html)将一个Observable的多个事件序列转换为多个Observable，在将这些Observables合并为一个Observable，注意
 它保证合并后事件保持原有的顺序。
 
-<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/rxjava/operator_flatmap.png"/>
-
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/rxjava/operator_flatMap.png"/>
 
 ```java
 Observable.create(new ObservableOnSubscribe<String>() {
