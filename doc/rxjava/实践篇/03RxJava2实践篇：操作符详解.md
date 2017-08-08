@@ -1,4 +1,4 @@
-# RxJava实践篇：操作符
+# RxJava实践篇：操作符详解
 
 **关于作者**
 
@@ -205,14 +205,14 @@ Observable.create(new ObservableOnSubscribe<String>() {
 
 输出打印
 
-<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/c0a9689a008515dc04e7d6f99f29345753210c7b/art/rxjava/log_operator_flatmap.png"/>
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/rxjava/log_operator_flatMap.png"/>
 
 ## concatMap
 
 [concatMap](http://reactivex.io/documentation/operators/flatmap.html)将一个Observable的多个事件序列转换为多个Observable，在将这些Observables合并为一个Observable，注意
 它保证合并后事件保持原有的顺序。
 
-<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/rxjava/operator_flatMap.png"/>
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/rxjava/operator_concatMap.png"/>
 
 ```java
 Observable.create(new ObservableOnSubscribe<String>() {
@@ -247,11 +247,13 @@ Observable.create(new ObservableOnSubscribe<String>() {
 ```
 输出打印
 
-<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/rxjava/operator_distinct.png"/>
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/rxjava/log_operator_concatMap.png"/>
 
 ## distinct
 
 [distinct](http://reactivex.io/documentation/operators/distinct.html)用于去掉重复的事件。
+
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/rxjava/operator_distinct.png"/>
 
 ```java
 Observable.just(1, 1, 2, 3, 3, 4, 5)
@@ -264,12 +266,10 @@ Observable.just(1, 1, 2, 3, 3, 4, 5)
         });
 ```
 
-<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/rxjava/log_operator_distinct.png"/>
-
 
 输出打印
 
-<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/rxjava/log_operator_concatMap.png"/>
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/rxjava/log_operator_distinct.png"/>
 
 ## filter
 

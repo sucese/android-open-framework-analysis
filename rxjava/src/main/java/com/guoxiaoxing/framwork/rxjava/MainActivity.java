@@ -264,7 +264,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     list.add(s + "_" + i);
                 }
                 //加上随机时间的延迟，观察事件序列的返回顺序
-                int delayTime = (int) (1 + Math.random() * 10);
+                int delayTime = (int) (1 + Math.random() * 100);
                 return Observable.fromIterable(list).delay(delayTime, TimeUnit.MILLISECONDS);
             }
         }).subscribeOn(Schedulers.newThread())
