@@ -33,4 +33,6 @@ dependencies {
     implementation 'com.android.support:appcompat-v7:26.0.0-beta1'
     testImplementation 'junit:junit:4.12'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+
+    compile 'com.squareup.okio:okio:1.13.0'
 }

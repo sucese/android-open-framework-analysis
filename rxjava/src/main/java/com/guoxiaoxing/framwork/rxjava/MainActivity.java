@@ -424,20 +424,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void subscribe(ObservableEmitter<Integer> e) throws Exception {
 
-                Thread.sleep(600);
                 e.onNext(1);
+                Thread.sleep(300);//1经过300毫秒后再次发送2，间隔小于500，舍弃
 
-                Thread.sleep(300);
                 e.onNext(2);
+                Thread.sleep(600);//2经过600毫秒后再次发送2，间隔大于500，保留
 
-                Thread.sleep(600);
                 e.onNext(3);
+                Thread.sleep(400);//3经过400毫秒后再次发送2，间隔小于500，舍弃
 
-                Thread.sleep(400);
                 e.onNext(4);
+                Thread.sleep(700);//4经过700毫秒后再次发送5，间隔大于500，保留
 
-                Thread.sleep(700);
                 e.onNext(5);
+                Thread.sleep(200);//5后续没有再发送事件，当然也不存在频率过快的判定，保留
 
                 e.onComplete();
             }
