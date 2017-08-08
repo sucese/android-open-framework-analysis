@@ -205,7 +205,7 @@ Observable.create(new ObservableOnSubscribe<String>() {
 
 输出打印
 
-<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/blob/c0a9689a008515dc04e7d6f99f29345753210c7b/art/rxjava/log_operator_flatmap.png"/>
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/c0a9689a008515dc04e7d6f99f29345753210c7b/art/rxjava/log_operator_flatmap.png"/>
 
 ## concatMap
 
