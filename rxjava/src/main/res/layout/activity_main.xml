@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp"
-    tools:mContext="com.guoxiaoxing.framwork.rxjava.MainActivity">
+    tools:mContext="com.guoxiaoxing.framwork.rxjava.OperatorActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -13,7 +13,7 @@
         android:orientation="vertical">
 
         <Button
-            android:id="@+id/btn_opertor_create"
+            android:id="@+id/btn_opertor"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
@@ -21,156 +21,13 @@
             android:textAllCaps="false" />
 
         <Button
-            android:id="@+id/btn_opertor_map"
+            android:id="@+id/btn_apply"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:text="map"
             android:textAllCaps="false" />
 
-        <Button
-            android:id="@+id/btn_opertor_zip"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="zip"
-            android:textAllCaps="false" />
-
-        <Button
-            android:id="@+id/btn_opertor_concat"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="concat"
-            android:textAllCaps="false" />
-
-        <Button
-            android:id="@+id/btn_opertor_flatmap"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="flatmap"
-            android:textAllCaps="false" />
-
-        <Button
-            android:id="@+id/btn_opertor_concatmap"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="concatmap"
-            android:textAllCaps="false" />
-
-        <Button
-            android:id="@+id/btn_opertor_distinct"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="distinct"
-            android:textAllCaps="false" />
-
-        <Button
-            android:id="@+id/btn_opertor_filter"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="filter"
-            android:textAllCaps="false" />
-
-        <Button
-            android:id="@+id/btn_opertor_buffer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="buffer"
-            android:textAllCaps="false" />
-
-        <Button
-            android:id="@+id/btn_opertor_timer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="timer"
-            android:textAllCaps="false" />
-
-        <Button
-            android:id="@+id/btn_opertor_interval"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="interval"
-            android:textAllCaps="false" />
-
-        <Button
-            android:id="@+id/btn_opertor_skip"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="skip"
-            android:textAllCaps="false" />
-
-        <Button
-            android:id="@+id/btn_opertor_take"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="take"
-            android:textAllCaps="false" />
-
-        <Button
-            android:id="@+id/btn_opertor_single"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="single"
-            android:textAllCaps="false" />
-
-        <Button
-            android:id="@+id/btn_opertor_denounce"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="debounce"
-            android:textAllCaps="false" />
-
-        <Button
-            android:id="@+id/btn_opertor_defer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="defer"
-            android:textAllCaps="false" />
-
-        <Button
-            android:id="@+id/btn_opertor_last"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="last"
-            android:textAllCaps="false" />
-
-        <Button
-            android:id="@+id/btn_opertor_merge"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="merge"
-            android:textAllCaps="false" />
-
-        <Button
-            android:id="@+id/btn_opertor_reduce"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="reduce"
-            android:textAllCaps="false" />
-
-        <Button
-            android:id="@+id/btn_opertor_scan"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="scan"
-            android:textAllCaps="false" />
     </LinearLayout>
 
 </ScrollView>
