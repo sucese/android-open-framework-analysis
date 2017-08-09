@@ -1,10 +1,12 @@
-# RxJava2实践篇：操作符详解
+# RxJava2实践篇：操作符
 
 **关于作者**
 
 >郭孝星，非著名程序员，主要从事Android平台基础架构与中间件方面的工作，欢迎交流技术方面的问题，可以去我的[Github](https://github.com/guoxiaoxing)提交Issue或者发邮件至guoxiaoxingse@163.com与我联系。
 
 RxJava中操作符基于责任链模式设计而成，它操作一个Obervable，并返回一个新的Observable，所以我们可以链式调用操作符。
+
+[RxJava操作符官方文档](http://reactivex.io/documentation/operators.html)
 
 ## 一 创建型Observable
 
@@ -695,7 +697,7 @@ Observable.just(1, 2, 3)
 - Materialize/Dematerialize — represent both the items emitted(发出) and the notifications(通知) sent as emitted items, or reverse(颠倒) this process
 - ObserveOn — specify(指定) the scheduler(安排) on which an observer will observe this Observable
 - Serialize — force an Observable to make serialized(序列化) calls and to be well-behaved(很乖的)
-- Subscribe — operate upon the emissions and notifications from an Observable
+- Subscribe — Observable向观察者发送事件序列
 - SubscribeOn — specify the scheduler an Observable should use when it is subscribed(订阅) to
 = TimeInterval — convert(转变) an Observable that emits items into one that emits indications(指示) of the amount of time elapsed(消逝) between those emissions
 - Timeout — mirror the source Observable, but issue an error notification if a particular period of time elapses without any emitted items

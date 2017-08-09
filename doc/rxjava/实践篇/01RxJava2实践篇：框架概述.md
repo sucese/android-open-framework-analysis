@@ -33,8 +33,6 @@ ReactiveX的优点：
 ```
 
 
-
-
 ## 附录
 
 - [Rxjava官方文档](http://reactivex.io/intro.html)

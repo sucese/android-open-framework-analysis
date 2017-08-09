@@ -13,29 +13,20 @@
         android:orientation="vertical">
 
         <Button
-            android:id="@+id/btn_opertor"
+            android:id="@+id/btn_thread_normal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text="operator"
+            android:text="normal"
             android:textAllCaps="false" />
 
         <Button
-            android:id="@+id/btn_thread"
+            android:id="@+id/btn_thread_new_thread"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text="thread"
+            android:text="new thread"
             android:textAllCaps="false" />
-
-        <Button
-            android:id="@+id/btn_apply"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="apply"
-            android:textAllCaps="false" />
-
     </LinearLayout>
 
 </ScrollView>

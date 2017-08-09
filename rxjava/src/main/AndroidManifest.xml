@@ -18,7 +18,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".OperatorActivity" />
-        <activity android:name=".ApplyActivity"></activity>
+        <activity android:name=".ApplyActivity" />
+        <activity android:name=".ThreadActivity"></activity>
     </application>
 
 </manifest>
