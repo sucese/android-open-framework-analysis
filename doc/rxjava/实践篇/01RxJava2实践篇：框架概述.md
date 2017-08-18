@@ -36,4 +36,5 @@ ReactiveX的优点：
 ## 附录
 
 - [Rxjava官方文档](http://reactivex.io/intro.html)
+- [ReactiveX官方网站](http://reactivex.io/RxJava/2.x/javadoc/overview-summary.html)
 - [ReactiveX官方文档中文版](https://mcxiaoke.gitbooks.io/rxdocs/content/Intro.html)
