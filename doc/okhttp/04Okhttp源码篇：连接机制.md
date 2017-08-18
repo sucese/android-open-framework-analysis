@@ -1,64 +1,50 @@
-# Okhttp源码篇：Okhttp源码概览
+# Okhttp源码篇：连接机制
 
 **关于作者**
 
 >郭孝星，非著名程序员，主要从事Android平台基础架构与中间件方面的工作，欢迎交流技术方面的问题，可以去我的[Github](https://github.com/guoxiaoxing)提交Issue或者发邮件至guoxiaoxingse@163.com与我联系。
 
-我们来看看HttpCodec与RealConnection对象的创建。以及整个连接流程。
+**文章目录**
+
+- 一 连接池
+- 二 连接流程
+
+## 一 连接池
+
+Okhttp是通过连接池来实现连接复用的，
+
+## 二 连接流程
+
+ConnectInterceptor用来完成连接，真正的连接在RealConnect中实现，连接由连接池ConnectPool来管理，连接池最多保持5个地址的连接keep-alive，每个keep-alive时长
+为5分钟，并有异步线程清理无效的连接。
+
+```java
+public final class ConnectInterceptor implements Interceptor {
+  public final OkHttpClient client;
+
+  public ConnectInterceptor(OkHttpClient client) {
+    this.client = client;
+  }
+
+  @Override public Response intercept(Chain chain) throws IOException {
+    RealInterceptorChain realChain = (RealInterceptorChain) chain;
+    Request request = realChain.request();
+    StreamAllocation streamAllocation = realChain.streamAllocation();
+
+    // We need the network to satisfy this request. Possibly for validating a conditional GET.
+    boolean doExtensiveHealthChecks = !request.method().equals("GET");
+    HttpCodec httpCodec = streamAllocation.newStream(client, doExtensiveHealthChecks);
+    RealConnection connection = streamAllocation.connection();
+
+    return realChain.proceed(request, streamAllocation, httpCodec, connection);
+  }
+}
+```
+
+StreamAllocation.newStream()最终调动findConnect()方法来建立连接。
 
 ```java
 public final class StreamAllocation {
-    
-    public HttpCodec newStream(OkHttpClient client, boolean doExtensiveHealthChecks) {
-        int connectTimeout = client.connectTimeoutMillis();
-        int readTimeout = client.readTimeoutMillis();
-        int writeTimeout = client.writeTimeoutMillis();
-        boolean connectionRetryEnabled = client.retryOnConnectionFailure();
-    
-        try {
-          //查找是否有完好的连接
-          RealConnection resultConnection = findHealthyConnection(connectTimeout, readTimeout,
-              writeTimeout, connectionRetryEnabled, doExtensiveHealthChecks);
-          //实例化HttpCodec
-          HttpCodec resultCodec = resultConnection.newCodec(client, this);
-    
-          synchronized (connectionPool) {
-            codec = resultCodec;
-            return resultCodec;
-          }
-        } catch (IOException e) {
-          throw new RouteException(e);
-        }
-      }
-    
-      /**
-       * Finds a connection and returns it if it is healthy. If it is unhealthy the process is repeated
-       * until a healthy connection is found.
-       */
-      private RealConnection findHealthyConnection(int connectTimeout, int readTimeout,
-          int writeTimeout, boolean connectionRetryEnabled, boolean doExtensiveHealthChecks)
-          throws IOException {
-        while (true) {
-          RealConnection candidate = findConnection(connectTimeout, readTimeout, writeTimeout,
-              connectionRetryEnabled);
-    
-          // If this is a brand new connection, we can skip the extensive health checks.
-          synchronized (connectionPool) {
-            if (candidate.successCount == 0) {
-              return candidate;
-            }
-          }
-    
-          // Do a (potentially slow) check to confirm that the pooled connection is still good. If it
-          // isn't, take it out of the pool and start again.
-          if (!candidate.isHealthy(doExtensiveHealthChecks)) {
-            noNewStreams();
-            continue;
-          }
-    
-          return candidate;
-        }
-      }
     
       /**
        * Returns a connection to host a new stream. This prefers the existing connection if it exists,
@@ -158,6 +144,8 @@ public final class StreamAllocation {
 
 5 将新创建的连接加入连接池。
 
+
+我们再来看看RealConnection.connect()方法的实现。
 
 ```java
 public final class RealConnection extends Http2Connection.Listener implements Connection {
@@ -274,91 +262,5 @@ public class Platform {
          int connectTimeout) throws IOException {
        socket.connect(address, connectTimeout);
      }
-}
-```
-
-TLS
-
-
-```java
-public final class RealConnection extends Http2Connection.Listener implements Connection {
-    
-     private void establishProtocol(ConnectionSpecSelector connectionSpecSelector) throws IOException {
-        if (route.address().sslSocketFactory() == null) {
-          protocol = Protocol.HTTP_1_1;
-          socket = rawSocket;
-          return;
-        }
-    
-        connectTls(connectionSpecSelector);
-    
-        if (protocol == Protocol.HTTP_2) {
-          socket.setSoTimeout(0); // HTTP/2 connection timeouts are set per-stream.
-          http2Connection = new Http2Connection.Builder(true)
-              .socket(socket, route.address().url().host(), source, sink)
-              .listener(this)
-              .build();
-          http2Connection.start();
-        }
-      }
-    
-      private void connectTls(ConnectionSpecSelector connectionSpecSelector) throws IOException {
-        Address address = route.address();
-        SSLSocketFactory sslSocketFactory = address.sslSocketFactory();
-        boolean success = false;
-        SSLSocket sslSocket = null;
-        try {
-          // Create the wrapper over the connected socket.
-          sslSocket = (SSLSocket) sslSocketFactory.createSocket(
-              rawSocket, address.url().host(), address.url().port(), true /* autoClose */);
-    
-          // Configure the socket's ciphers, TLS versions, and extensions.
-          ConnectionSpec connectionSpec = connectionSpecSelector.configureSecureSocket(sslSocket);
-          if (connectionSpec.supportsTlsExtensions()) {
-            Platform.get().configureTlsExtensions(
-                sslSocket, address.url().host(), address.protocols());
-          }
-    
-          // Force handshake. This can throw!
-          sslSocket.startHandshake();
-          Handshake unverifiedHandshake = Handshake.get(sslSocket.getSession());
-    
-          // Verify that the socket's certificates are acceptable for the target host.
-          if (!address.hostnameVerifier().verify(address.url().host(), sslSocket.getSession())) {
-            X509Certificate cert = (X509Certificate) unverifiedHandshake.peerCertificates().get(0);
-            throw new SSLPeerUnverifiedException("Hostname " + address.url().host() + " not verified:"
-                + "\n    certificate: " + CertificatePinner.pin(cert)
-                + "\n    DN: " + cert.getSubjectDN().getName()
-                + "\n    subjectAltNames: " + OkHostnameVerifier.allSubjectAltNames(cert));
-          }
-    
-          // Check that the certificate pinner is satisfied by the certificates presented.
-          address.certificatePinner().check(address.url().host(),
-              unverifiedHandshake.peerCertificates());
-    
-          // Success! Save the handshake and the ALPN protocol.
-          String maybeProtocol = connectionSpec.supportsTlsExtensions()
-              ? Platform.get().getSelectedProtocol(sslSocket)
-              : null;
-          socket = sslSocket;
-          source = Okio.buffer(Okio.source(socket));
-          sink = Okio.buffer(Okio.sink(socket));
-          handshake = unverifiedHandshake;
-          protocol = maybeProtocol != null
-              ? Protocol.get(maybeProtocol)
-              : Protocol.HTTP_1_1;
-          success = true;
-        } catch (AssertionError e) {
-          if (Util.isAndroidGetsocknameError(e)) throw new IOException(e);
-          throw e;
-        } finally {
-          if (sslSocket != null) {
-            Platform.get().afterHandshake(sslSocket);
-          }
-          if (!success) {
-            closeQuietly(sslSocket);
-          }
-        }
-      }
 }
 ```

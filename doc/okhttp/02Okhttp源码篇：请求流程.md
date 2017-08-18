@@ -58,7 +58,6 @@ public class OkHttpClient implements Cloneable, Call.Factory, WebSocket.Factory 
     @Override public Call newCall(Request request) {
       return new RealCall(this, request, false /* for web socket */);
     }
-  
 }
 ```
 可以看出，真正的请求被包装成了RealCall。我们来看看RealCall的实现。
@@ -322,17 +321,18 @@ public final class RealInterceptorChain implements Interceptor.Chain {
 ```java
 @Override public Response intercept(Chain chain) throws IOException {
     Request request = chain.request();
-    //1 该拦截器在Request阶段负责做的事情
+    //1 Request阶段，该拦截器在Request阶段负责做的事情
 
     //2 调用RealInterceptorChain.proceed()，其实是在递归调用下一个拦截器的intercept()方法
     response = ((RealInterceptorChain) chain).proceed(request, streamAllocation, null, null);
 
-    //3 完成了该拦截器在Response阶段负责做的事情，然后返回到上一层的拦截器。
+    //3 Response阶段，完成了该拦截器在Response阶段负责做的事情，然后返回到上一层的拦截器。
     return response;     
     }
   }
 ```
-从上面的描述可知，Request是按照interpretor的顺序正向处理，而Response是逆向处理的。
+从上面的描述可知，Request是按照interpretor的顺序正向处理，而Response是逆向处理的。这参考了OSI七层模型的原理，CallServerInterceptor相当于最底层的物理层，
+请求从上到逐层包装下发，响应从下到上再逐层包装返回。很漂亮的设计。
 
 interceptor的执行顺序：RetryAndFollowUpInterceptor -> BridgeInterceptor -> CacheInterceptor -> ConnectInterceptor -> CallServerInterceptor。
 
@@ -618,8 +618,6 @@ public final class RetryAndFollowUpInterceptor implements Interceptor {
 
 ### 7 BridgeInterceptor.intercept(Chain chain) 
 
-就跟它的名字描述的那样，它是一个桥梁，负责把用户构造的请求转换为发送给服务器的请求，把服务器返回的响应转换为对用户友好的响应。
-
 ```java
 public final class BridgeInterceptor implements Interceptor {
     @Override public Response intercept(Chain chain) throws IOException {
@@ -697,6 +695,10 @@ public final class BridgeInterceptor implements Interceptor {
       }
 }
 ```
+
+就跟它的名字描述的那样，它是一个桥梁，负责把用户构造的请求转换为发送给服务器的请求，把服务器返回的响应转换为对用户友好的响应。
+在Request阶段配置用户信息，并添加一些请求头。在Response阶段，进行gzip解压。
+
 
 这个方法主要是针对Header做了一些处理，这里主要提一下"Accept-Encoding", "gzip"，关于它有以下几点需要注意：
 
@@ -842,6 +844,8 @@ public final class ConnectInterceptor implements Interceptor {
       }
 }
 ```
+
+ConnectInterceptor在Request阶段建立连接，Response阶段不做处理，直接把它的下一层的Response返回给它的上一层。
 
 RealInterceptorChain构造函数有五个主要参数：
 
