@@ -9,36 +9,38 @@
 
 我们从一个简单的例子入手，一步步分析请求的发送与拦截流程。
 
-```kotlin
+```java
 /**
  * 发送Get请求-异步
  */
-private fun getAsynchronization(url: String) {
-    val okhttpClient: OkHttpClient = OkHttpClient.Builder().build()
-    val request: Request = Request.Builder()
+private void syncRequest(String url) throws IOException {
+    Request request = new Request.Builder()
             .url(url)
-            .build()
-    okhttpClient.newCall(request).enqueue(object : Callback {
-
-        override fun onFailure(call: Call?, e: IOException?) {
-            Log.d(App.TAG, e.toString())
-        }
-
-        override fun onResponse(call: Call?, response: Response?) {
-            Log.d(App.TAG, response?.body()?.string())
-        }
-    })
+            .build();
+    OkHttpClient okHttpClient = new OkHttpClient.Builder()
+            .build();
+    Response response = okHttpClient.newCall(request).execute();
 }
 
 /**
  * 发送Get请求-同步
  */
-private fun getSynchronization(url: String) {
-    val okhttpClient: OkHttpClient = OkHttpClient.Builder().build()
-    val request: Request = Request.Builder()
+private void asyncRequest(String url) {
+    Request request = new Request.Builder()
             .url(url)
-            .build()
-    val response: Response = okhttpClient.newCall(request).execute()
+            .build();
+    OkHttpClient okHttpClient = new OkHttpClient.Builder()
+            .build();
+    okHttpClient.newCall(request).enqueue(new Callback() {
+        @Override
+        public void onFailure(Call call, IOException e) {
+        }
+
+        @Override
+        public void onResponse(Call call, Response response) throws IOException {
+
+        }
+    });
 }
 ```
 
@@ -47,8 +49,7 @@ private fun getSynchronization(url: String) {
 
 请求处理流程图
 
-<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/okhttp/01/okhttp_request_flow.png"/>
-
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/okhttp/request_sequence.png"/>
 
 ### 1 OkHttpClient.newCall(Request request) 
 
@@ -201,37 +202,21 @@ public final class Dispatcher {
     
       /** Running synchronous calls. Includes canceled calls that haven't finished yet. */
       private final Deque<RealCall> runningSyncCalls = new ArrayDeque<>();
- 
-        synchronized void enqueue(AsyncCall call) {
-            
-          //正在运行的异步请求不得超过64，同一个host下的异步请求不得超过5个
-          if (runningAsyncCalls.size() < maxRequests && runningCallsForHost(call) < maxRequestsPerHost) {
-            runningAsyncCalls.add(call);
-            executorService().execute(call);
-          } else {
-            readyAsyncCalls.add(call);
-          }
-        }
-}
-```
-
-
-```java
-public final class Dispatcher {
-    
-      /** Ready async calls in the order they'll be run. */
-      private final Deque<AsyncCall> readyAsyncCalls = new ArrayDeque<>();
-    
-      /** Running asynchronous calls. Includes canceled calls that haven't finished yet. */
-      private final Deque<AsyncCall> runningAsyncCalls = new ArrayDeque<>();
-    
-      /** Running synchronous calls. Includes canceled calls that haven't finished yet. */
-      private final Deque<RealCall> runningSyncCalls = new ArrayDeque<>();
       
-        /** Used by {@code Call#execute} to signal it is in-flight. */
-        synchronized void executed(RealCall call) {
-          runningSyncCalls.add(call);
-        }
+      /** Used by {@code Call#execute} to signal it is in-flight. */
+      synchronized void executed(RealCall call) {
+        runningSyncCalls.add(call);
+      }
+
+      synchronized void enqueue(AsyncCall call) {
+      //正在运行的异步请求不得超过64，同一个host下的异步请求不得超过5个
+      if (runningAsyncCalls.size() < maxRequests && runningCallsForHost(call) < maxRequestsPerHost) {
+        runningAsyncCalls.add(call);
+        executorService().execute(call);
+      } else {
+        readyAsyncCalls.add(call);
+      }
+    }
 }
 ```
 Dispatcher是一个任务调度器，它内部维护了三个双端队列：
@@ -286,8 +271,6 @@ final class RealCall implements Call {
 
 我们继续来看看RealInterceptorChain里是怎么一级级处理的。
 
-### 6 RealInterceptorChain.proceed(Request request, StreamAllocation streamAllocation, HttpCodec httpCodec,RealConnection connection) 
-
 ```java
 public final class RealInterceptorChain implements Interceptor.Chain {
     
@@ -331,15 +314,29 @@ public final class RealInterceptorChain implements Interceptor.Chain {
 }
 ```
 
-这个方法比较有意思，在调用proceed方法之后，会继续构建一个新的RealInterceptorChain，调用下一个interceptor来继续请求，直到所有interceptor都处理完毕，将
+这个方法比较有意思，在调用proceed方法之后，会继续构建一个新的RealInterceptorChain对象，调用下一个interceptor来继续请求，直到所有interceptor都处理完毕，将
 得到的response返回。
+
+每个拦截器的方法都遵循这样的规则：
+
+```java
+@Override public Response intercept(Chain chain) throws IOException {
+    Request request = chain.request();
+    //1 该拦截器在Request阶段负责做的事情
+
+    //2 调用RealInterceptorChain.proceed()，其实是在递归调用下一个拦截器的intercept()方法
+    response = ((RealInterceptorChain) chain).proceed(request, streamAllocation, null, null);
+
+    //3 完成了该拦截器在Response阶段负责做的事情，然后返回到上一层的拦截器。
+    return response;     
+    }
+  }
+```
+从上面的描述可知，Request是按照interpretor的顺序正向处理，而Response是逆向处理的。
 
 interceptor的执行顺序：RetryAndFollowUpInterceptor -> BridgeInterceptor -> CacheInterceptor -> ConnectInterceptor -> CallServerInterceptor。
 
-我们分别来看看这5个拦截器的intercept()方法。
-
-
-### 7 RetryAndFollowUpInterceptor.intercept(Chain chain) 
+### 6 RetryAndFollowUpInterceptor.intercept(Chain chain) 
 
 RetryAndFollowUpInterceptor负责失败重试以及重定向。
 
@@ -515,8 +512,6 @@ public final class RetryAndFollowUpInterceptor implements Interceptor {
 
 4 根据响应码处理请求，返回Request不为空时则进行重定向处理，重定向的次数不能超过20次。
 
-我们来看看对不同响应码的处理，这也是对HTTP协议的实现，这一块主要牵扯到一些重定向的知识，这块的内容可以参见[]()
-
 ```java
 public final class RetryAndFollowUpInterceptor implements Interceptor {
       /**
@@ -621,7 +616,7 @@ public final class RetryAndFollowUpInterceptor implements Interceptor {
 ```
 总的来说，这个RetryAndFollowUpInterceptor就是初始化一个Socket连接，并处理了一些异常。我们接着来看看下一个BridgeInterceptor。
 
-### 8 BridgeInterceptor.intercept(Chain chain) 
+### 7 BridgeInterceptor.intercept(Chain chain) 
 
 就跟它的名字描述的那样，它是一个桥梁，负责把用户构造的请求转换为发送给服务器的请求，把服务器返回的响应转换为对用户友好的响应。
 
@@ -714,7 +709,7 @@ public final class BridgeInterceptor implements Interceptor {
 
 BridgeInterceptor主要就是针对Header做了一些处理，我们接着来看CacheInterceptor。
 
-### 9 CacheInterceptor.intercept(Chain chain) 
+### 8 CacheInterceptor.intercept(Chain chain) 
 
 ```java
 public final class CacheInterceptor implements Interceptor {
@@ -826,13 +821,9 @@ public final class CacheInterceptor implements Interceptor {
 Okhttp的缓存是基于DiskLruCache也就是磁盘缓存来做的，CacheStrategy实现了Okhttp的缓存策略，它根据equest 与 cached response来决定
 使用缓存、网络还是两者都用。
 
-1 如果配置了缓存，则从缓存中取一次，不保证存在。
-
-CacheInterceptor主要用来处理缓存，更多关于缓存机制的解析可以参见[]()
-
 我们再接着来看ConnectInterceptor。
 
-### 10 ConnectInterceptor.intercept(Chain chain) 
+### 9 ConnectInterceptor.intercept(Chain chain) 
 
 ```java
 public final class ConnectInterceptor implements Interceptor {
@@ -876,9 +867,7 @@ List<Interceptor>在RealCall中创建，StreamAllocation在RetryAndFollowUpInter
 - HttpCodec：用来编码HTTP requests和解码HTTP responses
 - RealConnection：连接对象，负责发起与服务器的连接。
 
-ConnectInterceptor主要功能就是发起向服务器发起连接，关于Okhttp的连接机制的详细解析可以参见[]()
-
-### 11 CallServerInterceptor.intercept(Chain chain) 
+### 10 CallServerInterceptor.intercept(Chain chain) 
 
 ```java
 public final class CallServerInterceptor implements Interceptor {
@@ -968,4 +957,4 @@ public final class CallServerInterceptor implements Interceptor {
 3. 读取响应头 
 4. 读取响应体 
 
-更多关于请求编码与响应解码的实现原理可以参见[]()
+这篇文章就到这里，后续的文章我们会来分析Okhttp的缓存机制、连接机制、编辑吗机制等实现。
