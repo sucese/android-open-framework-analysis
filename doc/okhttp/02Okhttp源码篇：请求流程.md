@@ -1,19 +1,15 @@
 # Okhttp源码篇：请求的发送与拦截流程
 
->郭孝星，非著名程序员，主要从事Android平台基础架构与中间件方面的工作，热爱编程，技术栈主要涉及以下几个方面
->
->- Android/Linux
->- Java/Kotlin/JVM
->- Python
->- JavaScript/React/ReactNative
->- DataStructure/Algorithm
->
->文章首发于[Github](https://github.com/guoxiaoxing)，后续也会同步在[简书](http://www.jianshu.com/users/66a47e04215b/latest_articles)与
-[CSDN](http://blog.csdn.net/allenwells)等博客平台上。文章中如果有什么问题，欢迎发邮件与我交流，邮件可发至guoxiaoxingse@163.com。
+**关于作者**
+
+>郭孝星，非著名程序员，主要从事Android平台基础架构与中间件方面的工作，欢迎交流技术方面的问题，可以去我的[Github](https://github.com/guoxiaoxing)提交Issue或者发邮件至guoxiaoxingse@163.com与我联系。
+
+从这篇文章开始，我们开始正式分析Okhttp源码，第一部分我们先来分析Okhttp的整个网络请求的流程，有了对整体流程的把握，我们才能
+有的放矢的去掌握细节。
 
 我们从一个简单的例子入手，一步步分析请求的发送与拦截流程。
 
-```java
+```kotlin
 /**
  * 发送Get请求-异步
  */
@@ -46,7 +42,7 @@ private fun getSynchronization(url: String) {
 }
 ```
 
-我们通过创建OkHttpClient来发起Http请求，每个OkHttpClient都持有自己的线程池与连接池，为了更好的性能，我们通常把OkHttpClient
+注：我们通过创建OkHttpClient来发起Http请求，每个OkHttpClient都持有自己的线程池与连接池，为了更好的性能，我们通常把OkHttpClient
 写成单例，共享使用。
 
 请求处理流程图
