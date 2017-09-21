@@ -14,19 +14,25 @@ import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
+    private OkHttpClient okHttpClient;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         findViewById(R.id.btn_async_request).setOnClickListener(this);
+
+        okHttpClient = new OkHttpClient.Builder().build();
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_async_request:
-                asyncRequest("http://www.baidu.com");
+                for (int i = 0; i < 100; i++) {
+                    asyncRequest("http://www.baidu.com");
+                }
                 break;
         }
     }
@@ -43,8 +49,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void asyncRequest(String url) {
         Request request = new Request.Builder()
                 .url(url)
-                .build();
-        OkHttpClient okHttpClient = new OkHttpClient.Builder()
                 .build();
         okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
