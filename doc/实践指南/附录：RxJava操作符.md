@@ -675,7 +675,6 @@ Observable.just(1, 2, 3)
     }
 });
 ```
-
 输出打印
 
 <img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/rxjava/log_operator_reduce.png"/>
