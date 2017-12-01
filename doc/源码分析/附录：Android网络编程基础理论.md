@@ -1,15 +1,10 @@
-# Okhttp源码篇：WebSocket协议实现
+# Android开源框架源码分析：okio
 
->郭孝星，非著名程序员，主要从事Android平台基础架构与中间件方面的工作，热爱编程，技术栈主要涉及以下几个方面
->
->- Android/Linux
->- Java/Kotlin/JVM
->- Python
->- JavaScript/React/ReactNative
->- DataStructure/Algorithm
->
->文章首发于[Github](https://github.com/guoxiaoxing)，后续也会同步在[简书](http://www.jianshu.com/users/66a47e04215b/latest_articles)与
-[CSDN](http://blog.csdn.net/allenwells)等博客平台上。文章中如果有什么问题，欢迎发邮件与我交流，邮件可发至guoxiaoxingse@163.com。
+**关于作者**
+
+>郭孝星，程序员，吉他手，主要从事Android平台基础架构方面的工作，欢迎交流技术方面的问题，可以去我的[Github](https://github.com/guoxiaoxing)提issue或者发邮件至guoxiaoxingse@163.com与我交流。
+
+## Http协议
 
 ## WebSocket协议
 

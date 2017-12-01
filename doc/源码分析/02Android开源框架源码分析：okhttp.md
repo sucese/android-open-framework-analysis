@@ -1,48 +1,138 @@
-# Okhttp源码篇：请求流程
+# Android开源框架源码分析：okhttp
 
 **关于作者**
 
->郭孝星，非著名程序员，主要从事Android平台基础架构与中间件方面的工作，欢迎交流技术方面的问题，可以去我的[Github](https://github.com/guoxiaoxing)提交Issue或者发邮件至guoxiaoxingse@163.com与我联系。
+>郭孝星，程序员，吉他手，主要从事Android平台基础架构方面的工作，欢迎交流技术方面的问题，可以去我的[Github](https://github.com/guoxiaoxing)提issue或者发邮件至guoxiaoxingse@163.com与我交流。
 
-从这篇文章开始，我们开始正式分析Okhttp源码，第一部分我们先来分析Okhttp的整个网络请求的流程，有了对整体流程的把握，我们才能
-有的放矢的去掌握细节。
+**文章目录**
 
-我们从一个简单的例子入手，一步步分析请求的发送与拦截流程。
+- 一 请求流程
+- 二 缓存机制
+- 一 连接机制
+- 一 编解码机制
+
+>An HTTP+HTTP/2 client for Android and Java applications.
+
+官方网站：https://github.com/square/okhttp
+
+源码版本：3.8.0
+
+我们先来看个例子，从例子入手，逐步分析Okhttp的实现。
+
+**举例**
 
 ```java
 /**
  * 发送Get请求-异步
  */
-private void syncRequest(String url) throws IOException {
-    Request request = new Request.Builder()
+private fun getAsynchronization(url: String) {
+    val okhttpClient: OkHttpClient = OkHttpClient.Builder().build()
+    val request: Request = Request.Builder()
             .url(url)
-            .build();
-    OkHttpClient okHttpClient = new OkHttpClient.Builder()
-            .build();
-    Response response = okHttpClient.newCall(request).execute();
+            .build()
+    okhttpClient.newCall(request).enqueue(object : Callback {
+
+        override fun onFailure(call: Call?, e: IOException?) {
+            Log.d(App.TAG, e.toString())
+        }
+
+        override fun onResponse(call: Call?, response: Response?) {
+            Log.d(App.TAG, response?.body()?.string())
+        }
+    })
 }
 
 /**
  * 发送Get请求-同步
  */
-private void asyncRequest(String url) {
-    Request request = new Request.Builder()
+private fun getSynchronization(url: String) {
+    val okhttpClient: OkHttpClient = OkHttpClient.Builder().build()
+    val request: Request = Request.Builder()
             .url(url)
-            .build();
-    OkHttpClient okHttpClient = new OkHttpClient.Builder()
-            .build();
-    okHttpClient.newCall(request).enqueue(new Callback() {
-        @Override
-        public void onFailure(Call call, IOException e) {
-        }
-
-        @Override
-        public void onResponse(Call call, Response response) throws IOException {
-
-        }
-    });
+            .build()
+    val response: Response = okhttpClient.newCall(request).execute()
 }
 ```
+
+从这个例子我们可以看出，和我们打交道的有这么几个角色：
+
+- OkHttpClient
+- RequestBody
+- Request
+- Response
+
+我们来分别介绍下这几个角色以及与它们相关的类与接口。
+
+OkHttpClient
+
+>通信的客户端，用来统一管理发起请求与解析响应。
+
+Call
+
+>Call是HTTP请求的抽象描述，具体实现类是RealCall，它由CallFactory创建。
+
+
+```java
+public interface Call extends Cloneable {
+    
+  //返回当前请求
+  Request request();
+
+  //同步请求方法，此方法会阻塞当前线程知道请求结果放回
+  Response execute() throws IOException;
+
+  //异步请求方法，此方法会将请求添加到队列中，然后等待请求返回
+  void enqueue(Callback responseCallback);
+
+  //取消请求
+  void cancel();
+
+  //请求是否在执行，当execute()或者enqueue(Callback responseCallback)执行后该方法返回true
+  boolean isExecuted();
+
+  //请求是否被取消
+  boolean isCanceled();
+
+  //创建一个新的一模一样的请求
+  Call clone();
+
+  interface Factory {
+    Call newCall(Request request);
+  }
+}
+```
+
+Interceptor
+
+>Interceptor是请求拦截器，负责拦截并处理请求，它将网络请求、缓存、透明压缩等功能都统一起来，每个功能都是一个Interceptor，所有的
+Interceptor最终连接成一个Interceptor.Chain。典型的责任链模式实现。
+
+- RetryAndFollowUpInterceptor：负责失败重试以及重定向。
+- BridgeInterceptor：负责把用户构造的请求转换为发送给服务器的请求，把服务器返回的响应转换为对用户友好的响应。
+- CacheInterceptor：负责读取缓存以及更新缓存。
+- ConnectInterceptor：负责与服务器建立连接。
+- CallServerInterceptor：负责从服务器读取响应的数据。
+
+```java
+public interface Interceptor {
+  Response intercept(Chain chain) throws IOException;
+
+  interface Chain {
+    Request request();
+
+    Response proceed(Request request) throws IOException;
+    
+    //返回Request执行后返回的连接
+    @Nullable Connection connection();
+  }
+}
+
+```
+
+Connection
+
+## 一 请求流程
+
 
 注：我们通过创建OkHttpClient来发起Http请求，每个OkHttpClient都持有自己的线程池与连接池，为了更好的性能，我们通常把OkHttpClient
 写成单例，共享使用。
@@ -962,3 +1052,399 @@ public final class CallServerInterceptor implements Interceptor {
 4. 读取响应体 
 
 这篇文章就到这里，后续的文章我们会来分析Okhttp的缓存机制、连接机制、编辑吗机制等实现。
+
+
+## 二 连接机制
+
+## 一 连接池
+
+Okhttp是通过连接池来实现连接复用的，
+
+## 二 连接流程
+
+ConnectInterceptor用来完成连接，真正的连接在RealConnect中实现，连接由连接池ConnectPool来管理，连接池最多保持5个地址的连接keep-alive，每个keep-alive时长
+为5分钟，并有异步线程清理无效的连接。
+
+```java
+public final class ConnectInterceptor implements Interceptor {
+  public final OkHttpClient client;
+
+  public ConnectInterceptor(OkHttpClient client) {
+    this.client = client;
+  }
+
+  @Override public Response intercept(Chain chain) throws IOException {
+    RealInterceptorChain realChain = (RealInterceptorChain) chain;
+    Request request = realChain.request();
+    StreamAllocation streamAllocation = realChain.streamAllocation();
+
+    // We need the network to satisfy this request. Possibly for validating a conditional GET.
+    boolean doExtensiveHealthChecks = !request.method().equals("GET");
+    HttpCodec httpCodec = streamAllocation.newStream(client, doExtensiveHealthChecks);
+    RealConnection connection = streamAllocation.connection();
+
+    return realChain.proceed(request, streamAllocation, httpCodec, connection);
+  }
+}
+```
+
+StreamAllocation.newStream()最终调动findConnect()方法来建立连接。
+
+```java
+public final class StreamAllocation {
+    
+      /**
+       * Returns a connection to host a new stream. This prefers the existing connection if it exists,
+       * then the pool, finally building a new connection.
+       */
+      private RealConnection findConnection(int connectTimeout, int readTimeout, int writeTimeout,
+          boolean connectionRetryEnabled) throws IOException {
+        Route selectedRoute;
+        synchronized (connectionPool) {
+          if (released) throw new IllegalStateException("released");
+          if (codec != null) throw new IllegalStateException("codec != null");
+          if (canceled) throw new IOException("Canceled");
+    
+          //1 查看是否有完好的连接
+          // Attempt to use an already-allocated connection.
+          RealConnection allocatedConnection = this.connection;
+          if (allocatedConnection != null && !allocatedConnection.noNewStreams) {
+            return allocatedConnection;
+          }
+    
+          //2 连接池中是否用可用的连接，有则使用
+          // Attempt to get a connection from the pool.
+          Internal.instance.get(connectionPool, address, this, null);
+          if (connection != null) {
+            return connection;
+          }
+    
+          selectedRoute = route;
+        }
+    
+        //线程的选择，多IP操作
+        // If we need a route, make one. This is a blocking operation.
+        if (selectedRoute == null) {
+          selectedRoute = routeSelector.next();
+        }
+    
+        //3 如果没有可用连接，则自己创建一个
+        RealConnection result;
+        synchronized (connectionPool) {
+          if (canceled) throw new IOException("Canceled");
+    
+          // Now that we have an IP address, make another attempt at getting a connection from the pool.
+          // This could match due to connection coalescing.
+          Internal.instance.get(connectionPool, address, this, selectedRoute);
+          if (connection != null) {
+            route = selectedRoute;
+            return connection;
+          }
+    
+          // Create a connection and assign it to this allocation immediately. This makes it possible
+          // for an asynchronous cancel() to interrupt the handshake we're about to do.
+          route = selectedRoute;
+          refusedStreamCount = 0;
+          result = new RealConnection(connectionPool, selectedRoute);
+          acquire(result);
+        }
+    
+        //4 开始TCP以及TLS握手操作
+        // Do TCP + TLS handshakes. This is a blocking operation.
+        result.connect(connectTimeout, readTimeout, writeTimeout, connectionRetryEnabled);
+        routeDatabase().connected(result.route());
+    
+        //5 将新创建的连接，放在连接池中
+        Socket socket = null;
+        synchronized (connectionPool) {
+          // Pool the connection.
+          Internal.instance.put(connectionPool, result);
+    
+          // If another multiplexed connection to the same address was created concurrently, then
+          // release this connection and acquire that one.
+          if (result.isMultiplexed()) {
+            socket = Internal.instance.deduplicate(connectionPool, address, this);
+            result = connection;
+          }
+        }
+        closeQuietly(socket);
+    
+        return result;
+      }    
+}
+```
+
+整个流程如下：
+
+1 查找是否有完整的连接可用：
+
+- Socket没有关闭
+- 输入流没有关闭
+- 输出流没有关闭
+- Http2连接没有关闭
+
+2 连接池中是否有可用的连接，如果有则可用。
+
+3 如果没有可用连接，则自己创建一个。
+
+4 开始TCP连接以及TLS握手操作。
+
+5 将新创建的连接加入连接池。
+
+
+我们再来看看RealConnection.connect()方法的实现。
+
+```java
+public final class RealConnection extends Http2Connection.Listener implements Connection {
+    
+    public void connect(
+         int connectTimeout, int readTimeout, int writeTimeout, boolean connectionRetryEnabled) {
+       if (protocol != null) throw new IllegalStateException("already connected");
+   
+       //线路选择
+       RouteException routeException = null;
+       List<ConnectionSpec> connectionSpecs = route.address().connectionSpecs();
+       ConnectionSpecSelector connectionSpecSelector = new ConnectionSpecSelector(connectionSpecs);
+   
+       if (route.address().sslSocketFactory() == null) {
+         if (!connectionSpecs.contains(ConnectionSpec.CLEARTEXT)) {
+           throw new RouteException(new UnknownServiceException(
+               "CLEARTEXT communication not enabled for client"));
+         }
+         String host = route.address().url().host();
+         if (!Platform.get().isCleartextTrafficPermitted(host)) {
+           throw new RouteException(new UnknownServiceException(
+               "CLEARTEXT communication to " + host + " not permitted by network security policy"));
+         }
+       }
+       
+       //开始连接
+       while (true) {
+         try {
+            //如果是通道模式，则建立通道连接
+           if (route.requiresTunnel()) {
+             connectTunnel(connectTimeout, readTimeout, writeTimeout);
+           } 
+           //否则进行Socket连接，一般都是属于这种情况
+           else {
+             connectSocket(connectTimeout, readTimeout);
+           }
+           //建立https连接
+           establishProtocol(connectionSpecSelector);
+           break;
+         } catch (IOException e) {
+           closeQuietly(socket);
+           closeQuietly(rawSocket);
+           socket = null;
+           rawSocket = null;
+           source = null;
+           sink = null;
+           handshake = null;
+           protocol = null;
+           http2Connection = null;
+   
+           if (routeException == null) {
+             routeException = new RouteException(e);
+           } else {
+             routeException.addConnectException(e);
+           }
+   
+           if (!connectionRetryEnabled || !connectionSpecSelector.connectionFailed(e)) {
+             throw routeException;
+           }
+         }
+       }
+   
+       if (http2Connection != null) {
+         synchronized (connectionPool) {
+           allocationLimit = http2Connection.maxConcurrentStreams();
+         }
+       }
+     }
+
+    /** Does all the work necessary to build a full HTTP or HTTPS connection on a raw socket. */
+      private void connectSocket(int connectTimeout, int readTimeout) throws IOException {
+        Proxy proxy = route.proxy();
+        Address address = route.address();
+    
+        //根据代理类型的不同处理Socket
+        rawSocket = proxy.type() == Proxy.Type.DIRECT || proxy.type() == Proxy.Type.HTTP
+            ? address.socketFactory().createSocket()
+            : new Socket(proxy);
+    
+        rawSocket.setSoTimeout(readTimeout);
+        try {
+          //建立Socket连接
+          Platform.get().connectSocket(rawSocket, route.socketAddress(), connectTimeout);
+        } catch (ConnectException e) {
+          ConnectException ce = new ConnectException("Failed to connect to " + route.socketAddress());
+          ce.initCause(e);
+          throw ce;
+        }
+    
+        // The following try/catch block is a pseudo hacky way to get around a crash on Android 7.0
+        // More details:
+        // https://github.com/square/okhttp/issues/3245
+        // https://android-review.googlesource.com/#/c/271775/
+        try {
+          //获取输入/输出流
+          source = Okio.buffer(Okio.source(rawSocket));
+          sink = Okio.buffer(Okio.sink(rawSocket));
+        } catch (NullPointerException npe) {
+          if (NPE_THROW_WITH_NULL.equals(npe.getMessage())) {
+            throw new IOException(npe);
+          }
+        }
+      }
+}
+```
+
+最终调用Java里的套接字Socket里的connect()方法。
+
+
+```java
+public class Platform {
+    
+     public void connectSocket(Socket socket, InetSocketAddress address,
+         int connectTimeout) throws IOException {
+       socket.connect(address, connectTimeout);
+     }
+}
+```
+
+## 三 缓存机制
+
+
+这篇文章我们来分析Okhttp的缓存机制，缓存机制是基于DiskLruCache做的。Cache类封装了缓存的实现，实现了
+InternalCache接口。
+
+**InternalCache**
+
+```java
+public interface InternalCache {
+  Response get(Request request) throws IOException;
+
+  CacheRequest put(Response response) throws IOException;
+
+  /**
+   * Remove any cache entries for the supplied {@code request}. This is invoked when the client
+   * invalidates the cache, such as when making POST requests.
+   */
+  void remove(Request request) throws IOException;
+
+  /**
+   * Handles a conditional request hit by updating the stored cache response with the headers from
+   * {@code network}. The cached response body is not updated. If the stored response has changed
+   * since {@code cached} was returned, this does nothing.
+   */
+  void update(Response cached, Response network);
+
+  /** Track an conditional GET that was satisfied by this cache. */
+  void trackConditionalCacheHit();
+
+  /** Track an HTTP response being satisfied with {@code cacheStrategy}. */
+  void trackResponse(CacheStrategy cacheStrategy);
+}
+
+```
+
+**Cache**
+
+```java
+final @Nullable Cache cache;
+final @Nullable InternalCache internalCache;
+  
+InternalCache internalCache() {
+    return cache != null ? cache.internalCache : internalCache;
+}
+```
+我们来看看get()方法的实现。
+
+```java
+public final class Cache implements Closeable, Flushable {
+    
+      final InternalCache internalCache = new InternalCache() {
+        @Override public Response get(Request request) throws IOException {
+          return Cache.this.get(request);
+        }
+    
+        @Override public CacheRequest put(Response response) throws IOException {
+          return Cache.this.put(response);
+        }
+    
+        @Override public void remove(Request request) throws IOException {
+          Cache.this.remove(request);
+        }
+    
+        @Override public void update(Response cached, Response network) {
+          Cache.this.update(cached, network);
+        }
+    
+        @Override public void trackConditionalCacheHit() {
+          Cache.this.trackConditionalCacheHit();
+        }
+    
+        @Override public void trackResponse(CacheStrategy cacheStrategy) {
+          Cache.this.trackResponse(cacheStrategy);
+        }
+      };
+}
+```
+
+Cache类定义一些内部类，这些类封装了请求与响应信息。
+
+- Entry：封装了请求与响应等信息，包括url、varyHeaders、protocol、code、message、responseHeaders、handshake、sentRequestMillis与receivedResponseMillis。
+- CacheResponseBody：继承于ResponseBody，封装了缓存快照snapshot，响应体bodySource，内容类型contentType，内容长度contentLength。
+
+我们再来看看Cache里的增、删、查、改四个操作。
+
+## 增
+
+
+
+
+## 删
+
+## 查
+
+```java
+public final class Cache implements Closeable, Flushable {
+    
+       @Nullable Response get(Request request) {
+         //通过url生成key
+         String key = key(request.url());
+         DiskLruCache.Snapshot snapshot;
+         Entry entry;
+         try {
+           //从DiskLruCache取出快照
+           snapshot = cache.get(key);
+           if (snapshot == null) {
+             return null;
+           }
+         } catch (IOException e) {
+           // Give up because the cache cannot be read.
+           return null;
+         }
+     
+         try {
+           //通过快照生成一个实体类Entry，Entry描述了请求与返回的信息
+           entry = new Entry(snapshot.getSource(ENTRY_METADATA));
+         } catch (IOException e) {
+           Util.closeQuietly(snapshot);
+           return null;
+         }
+     
+         //通过Entry获取Response
+         Response response = entry.response(snapshot);
+     
+         if (!entry.matches(request, response)) {
+           Util.closeQuietly(response.body());
+           return null;
+         }
+     
+         return response;
+       }    
+}
+```
+
+## 改

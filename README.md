@@ -9,18 +9,27 @@
 |[retrofit](https://github.com/square/retrofit)|Type-safe HTTP client for Android and Java by Square, Inc
 |[gson](https://github.com/google/gson)|A Java serialization/deserialization library to convert Java Objects into JSON and back
 |[fresco](https://github.com/facebook/fresco)|An Android library for managing images and the memory they use
-|[realm-java](https://github.com/realm/realm-java)|Realm is a mobile database: a replacement for SQLite & ORMs
 |[RxJava](https://github.com/ReactiveX/RxJava)|A library for composing asynchronous and event-based programs using observable sequences for the Java VM
-|[react-native](https://github.com/facebook/react-native)|A framework for building native apps with React
 |[DiskLruCache](https://github.com/JakeWharton/DiskLruCache)|Java implementation of a Disk-based LRU cache which specifically targets Android compatibility
-|[leakcanary](https://github.com/square/leakcanary)|A memory leak detection library for Android and Java
 
-**okhttp**
 
-- [01Okhttp源码篇：源码概览](https://github.com/guoxiaoxing/android-open-framwork-analysis/blob/master/doc/okhttp/01Okhttp源码篇：源码概览.md)
-- [02Okhttp源码篇：请求流程](https://github.com/guoxiaoxing/android-open-framwork-analysis/blob/master/doc/okhttp/02Okhttp源码篇：请求流程.md)
-- [03Okhttp源码篇：缓存机制](https://github.com/guoxiaoxing/android-open-framwork-analysis/blob/master/doc/okhttp/03Okhttp源码篇：缓存机制.md)
-- [04Okhttp源码篇：连接机制](https://github.com/guoxiaoxing/android-open-framwork-analysis/blob/master/doc/okhttp/04Okhttp源码篇：连接机制.md)
-- [05Okhttp源码篇：编解码机制](https://github.com/guoxiaoxing/android-open-framwork-analysis/blob/master/doc/okhttp/05Okhttp源码篇：编解码机制.md)
-- [06Okhttp源码篇：HTTP协议](https://github.com/guoxiaoxing/android-open-framwork-analysis/blob/master/doc/okhttp/06Okhttp源码篇：HTTP协议.md)
-- [07Okhttp源码篇：WebSocket协议](https://github.com/guoxiaoxing/android-open-framwork-analysis/blob/master/doc/okhttp/07Okhttp源码篇：WebSocket协议.md)
+**源码分析**
+
+- 01Android开源框架源码分析：okio
+- 02Android开源框架源码分析：okhttp
+- 03Android开源框架源码分析：retrofit
+- 04Android开源框架源码分析：gson
+- 05Android开源框架源码分析：fresco
+- 06Android开源框架源码分析：RxJava
+- 07Android开源框架源码分析：DiskLruCache
+
+
+**实践指南**
+
+- 01Android开源框架实践指南：okio
+- 02Android开源框架实践指南：okhttp
+- 03Android开源框架实践指南：retrofit
+- 04Android开源框架实践指南：gson
+- 05Android开源框架实践指南：fresco
+- 06Android开源框架实践指南：RxJava
+- 07Android开源框架实践指南：DiskLruCache
