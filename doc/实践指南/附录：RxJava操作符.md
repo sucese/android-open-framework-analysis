@@ -701,4 +701,3 @@ Observable.just(1, 2, 3)
 - Timeout — mirror the source Observable, but issue an error notification if a particular period of time elapses without any emitted items
 - Timestamp — attach(依附) a timestamp(时间戳) to each item emitted(发出) by an Observable
 - Using — create a disposable(可任意处理的) resource that has the same lifespan(寿命) as the Observable
-
