@@ -679,7 +679,6 @@ Observable.just(1, 2, 3)
 
 <img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/rxjava/log_operator_reduce.png"/>
 
-
 ## 八 连接型Observable
 
 - Connect — instruct a connectable Observable to begin emitting(发出) items to its subscribers(订阅)
