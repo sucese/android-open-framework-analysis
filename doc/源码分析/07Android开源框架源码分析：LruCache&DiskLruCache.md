@@ -4,6 +4,17 @@
 
 >郭孝星，程序员，吉他手，主要从事Android平台基础架构方面的工作，欢迎交流技术方面的问题，可以去我的[Github](https://github.com/guoxiaoxing)提issue或者发邮件至guoxiaoxingse@163.com与我交流。
 
+**文章目录**
+
+- 一 Lru算法
+- 二 LruCache原理分析
+    - 2.1 写入缓存
+    - 2.2 读取缓存
+    - 2.3 删除缓存
+- 三 DiskLruCache原理分析
+    - 3.1 写入缓存
+    - 3.2 读取缓存
+    - 3.3 删除缓存
 
 ## 一 Lru算法
 
