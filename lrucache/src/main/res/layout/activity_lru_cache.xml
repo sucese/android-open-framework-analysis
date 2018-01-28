@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:context="com.guoxiaoxing.lrucache.demo.LruCacheActivity">
+
+
+    <Button
+        android:id="@+id/bitmap_reuse"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="复用Bitmap"
+        android:textAllCaps="false" />
+
+    <Button
+        android:id="@+id/bitmap_non_reuse"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="不复用Bitmap"
+        android:textAllCaps="false" />
+
+    <Button
+        android:id="@+id/linked_hash_map_sort"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="LinkedHashMap排序"
+        android:textAllCaps="false" />
+
+    <Button
+        android:id="@+id/disk_lru_cache"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="写入磁盘缓存"
+        android:textAllCaps="false" />
+</LinearLayout>
