@@ -111,9 +111,34 @@ public class LruCache<K, V> {
 
 我们来写个小例子验证一下。
 
+```java
+Map<Integer, Integer> map = new LinkedHashMap<>(5, 0.75F, true);
+map.put(1, 1);
+map.put(2, 2);
+map.put(3, 3);
+map.put(4, 4);
+map.put(5, 5);
+
+Log.d(TAG, "before visit");
+
+for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
+    Log.d(TAG, String.valueOf(entry.getValue()));
+}
+
+//访问3，4两个元素
+map.get(3);
+map.get(4);
+
+Log.d(TAG, "after visit");
+
+for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
+    Log.d(TAG, String.valueOf(entry.getValue()));
+}
+```
+
 程序输入Log：
 
-<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/lru/lru_structure.png"/>
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/lru/linked_hash_map_sort.png"/>
 
 注：在LinkedHashMap中最近被方位的元素会被移动到表尾，LruCache也是从从表尾访问数据，在表头删除数据，
 
