@@ -16,6 +16,8 @@
     - 3.2 读取缓存
     - 3.3 删除缓存
 
+更多Android开源框架源码分析文章请参见[Android open framwork analysis](https://github.com/guoxiaoxing/android-open-framwork-analysis)。
+
 ## 一 Lru算法
 
 在分析LruCache与DiskLruCache之前，我们先来简单的了解下LRU算法的核心原理。
@@ -33,7 +35,7 @@ LRU算法流程图如下所示：
 
 >假设我们从表尾访问数据，在表头删除数据，当访问的数据项在链表中存在时，则将该数据项移动到表尾，否则在表尾新建一个数据项。当链表容量超过一定阈值，则移除表头的数据。
 
-好，以上便是整个Lru算法的原理，我们接着来分析LruCache与DiskLruCache之的实现。
+好，以上便是整个Lru算法的原理，我们接着来分析LruCache与DiskLruCache的实现。
 
 ## 二 LruCache原理分析
 
@@ -154,10 +156,11 @@ public LruCache(int maxSize) {
 }
 ```
 
-我们再来看看LruCache是如何进行数据的插入、访问和删除的。
+我们再来看看LruCache是如何进行缓存的写入、获取和删除的。
 
 ### 2.1 写入缓存
 
+写入缓存是通过LruCache的put()方法实现的，如下所示：
 
 ```java
 public class LruCache<K, V> {
@@ -240,6 +243,7 @@ public class LruCache<K, V> {
 
 ### 2.2 读取缓存
 
+读取缓存是通过LruCache的get()方法实现的，如下所示：
 
 ```java
 public class LruCache<K, V> {
@@ -298,6 +302,8 @@ public class LruCache<K, V> {
 2. 当获取不到和key对应的元素时，尝试调用create()方法创建建元素，以下就是创建的过程，和put()方法流程相同。
 
 ### 2.3 删除缓存
+
+删除缓存是通过LruCache的remove()方法实现的，如下所示：
 
 ```java
 public class LruCache<K, V> {
@@ -423,6 +429,7 @@ DiskLruCache的构造方法并没有做别的事情，只是简单的将对应�
 - readJournal()：读取journal文件，主要是读取文件头里的信息进行检验，然后调用readJournalLine()逐行去读取，根据读取的内容，执行相应的缓存
 添加、移除等操作。
 - rebuildJournal()：重建journal文件，重建journal文件主要是写入文件头（上面提到的journal文件都有的前面五行的内容）。
+- rocessJournal()：计算当前缓存容量的大小。
 
 我们接着来分析什么是journal文件，以及它的创建与读写流程。
 
@@ -499,6 +506,7 @@ public final class DiskLruCache implements Closeable {
         Writer writer = new BufferedWriter(
             new OutputStreamWriter(new FileOutputStream(journalFileTmp), Util.US_ASCII));
         try {
+          //写入文件头
           writer.write(MAGIC);
           writer.write("\n");
           writer.write(VERSION_1);
@@ -697,7 +705,7 @@ public final class DiskLruCache implements Closeable {
 
 ### 3.2 写入缓存
 
-DiskLruCache缓存的写入是通过edit()方法来完成的。
+DiskLruCache缓存的写入是通过edit()方法来完成的，如下所示：
 
 
 ```java
@@ -873,7 +881,7 @@ public final class DiskLruCache implements Closeable {
 
 ### 3.3 读取缓存
 
-读取缓存是由DiskLruCache的get()方法来完成的。
+读取缓存是由DiskLruCache的get()方法来完成的，如下所示：
 
 ```java
 public final class DiskLruCache implements Closeable {
@@ -939,7 +947,7 @@ public final class DiskLruCache implements Closeable {
 
 ### 3.4 删除缓存
 
-删除缓存是由DiskLruCache的remove()方法来完成的。
+删除缓存是由DiskLruCache的remove()方法来完成的，如下所示：
 
 ```java
 public final class DiskLruCache implements Closeable {
