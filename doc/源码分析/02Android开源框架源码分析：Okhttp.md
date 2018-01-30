@@ -31,7 +31,6 @@
 ```java
 OkHttpClient okHttpClient = new OkHttpClient.Builder()
         .build();
-
 Request request = new Request.Builder()
         .url(url)
         .build();
@@ -52,7 +51,9 @@ OkHttpClient相当于是个上下文或者说是大管家，它接到我们给�
 
 Okhttp的子系统层级结构图如下所示：
 
-<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/okhttp/okhttp_structure.png"/>
+👉 点击图片查看大图
+
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/okhttp/okhttp_structure.png" width="600"/>
 
 - 网络配置层：利用Builder模式配置各种参数，例如：超时时间、拦截器等，这些参数都会由Okhttp分发给各个需要的子系统。
 - 连接层：连接层是一个比较复杂的层级，它实现了网络协议、内部的拦截器、安全性认证，连接与连接池等功能，但这一层还没有发起真正的连接，它只是做了连接器一些参数的处理。
