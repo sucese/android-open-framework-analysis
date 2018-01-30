@@ -1,7 +1,7 @@
 package com.guoxiaoxing.okhttp.demo;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import java.io.IOException;
@@ -47,6 +47,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void asyncRequest(String url) {
+        OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .build();
+
         Request request = new Request.Builder()
                 .url(url)
                 .build();
