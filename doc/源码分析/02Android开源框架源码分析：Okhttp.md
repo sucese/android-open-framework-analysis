@@ -6,10 +6,16 @@
 
 **文章目录**
 
-- 一 请求流程
-- 二 缓存机制
-- 一 连接机制
-- 一 编解码机制
+- 一 请求与响应流程
+    - 1.1 请求的封装
+    - 1.2 请求的发送
+    - 1.3 请求的调度
+- 二 拦截器
+    - 2.1 RetryAndFollowUpInterceptor
+    - 2.2 BridgeInterceptor
+    - 2.3 CacheInterceptor
+    - 2.4 ConnectInterceptor
+    - 2.5 CallServerInterceptor
 
 在Android刀耕火种的哪个年代，我们做网络请求通常会选用HttpURLConnection或者Apache HTTP Client，这两者均支持HTTPS、流的上传和下载、配置超时和连接池等特性，但随着业务场景的负责化以及
 对流量消耗的优化需求，Okhttp应运而生，自诞生起，口碑就一直很好。
@@ -56,9 +62,11 @@ Okhttp的子系统层级结构图如下所示：
 <img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/okhttp/okhttp_structure.png" width="600"/>
 
 - 网络配置层：利用Builder模式配置各种参数，例如：超时时间、拦截器等，这些参数都会由Okhttp分发给各个需要的子系统。
+- 重定向层：负责重定向。
+- Header拼接层：负责把用户构造的请求转换为发送给服务器的请求，把服务器返回的响应转换为对用户友好的响应。
+- HTTP缓存层：负责读取缓存以及更新缓存。
 - 连接层：连接层是一个比较复杂的层级，它实现了网络协议、内部的拦截器、安全性认证，连接与连接池等功能，但这一层还没有发起真正的连接，它只是做了连接器一些参数的处理。
-- 平台适配层：该层针对Android2.3到Android5.0以后的网络请求做适配处理。
-- 数据层：该层是与服务端利用Socket真正建立连接的地方。
+- 数据响应层：负责从服务器读取响应的数据。
 
 在整个Okhttp的系统中，我们还要理解以下几个关键角色：
 
@@ -83,6 +91,8 @@ Okhttp的整个请求与响应的流程就是Dispatcher不断从Request Queue里
 
 一图胜千言，我们来看一下整个的流程图，如下所示：
 
+👉 点击图片查看大图
+
 <img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/okhttp/request_and_response_structure.png"/>
 
 读者仔细看一下这个流程图，是不是很像计算机网络的OSI七层模型，Okhttp正式采用这种思路，利用拦截器Interceptor将整套框架纵向分层，简化了设计逻辑，提升了框架扩展性。
@@ -96,6 +106,8 @@ Okhttp的整个请求与响应的流程就是Dispatcher不断从Request Queue里
 带着以上问题，我们去源码中一探究竟。
 
 我们先来看一下具体的函数调用链，请求与响应的序列图如下所示：
+
+👉 点击图片查看大图
 
 <img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/okhttp/request_and_response_sequence.png"/>
 
@@ -337,7 +349,7 @@ final class RealCall implements Call {
 短短几行代码，完成了对请求的所有处理过程，Interceptor将网络请求、缓存、透明压缩等功能统一了起来，它的实现采用责任链模式，各司其职，
 每个功能都是一个Interceptor，上一级处理完成以后传递给下一级，它们最后连接成了一个Interceptor.Chain。它们的功能如下：
 
-- RetryAndFollowUpInterceptor：负责失败重试以及重定向。
+- RetryAndFollowUpInterceptor：负责重定向。
 - BridgeInterceptor：负责把用户构造的请求转换为发送给服务器的请求，把服务器返回的响应转换为对用户友好的响应。
 - CacheInterceptor：负责读取缓存以及更新缓存。
 - ConnectInterceptor：负责与服务器建立连接。
@@ -374,7 +386,6 @@ Okhttp内置的拦截器如下所示：
 - CacheInterceptor：负责读取缓存以及更新缓存。
 - ConnectInterceptor：负责与服务器建立连接。
 - CallServerInterceptor：负责从服务器读取响应的数据。
-
 
 我们继续来看看RealInterceptorChain里是怎么一级级处理的。
 
