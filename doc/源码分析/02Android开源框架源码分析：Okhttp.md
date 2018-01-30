@@ -34,7 +34,7 @@
 
 官方网站：https://github.com/square/okhttp
 
-源码版本：3.8.0
+源码版本：3.9.1
 
 在正式分析源码之前，我们先来看个简单的小例子，从例子入手，逐步分析Okhttp的实现。
 
@@ -1427,7 +1427,9 @@ public final class ConnectionPool {
 
 HTTP的缓存机制也是依赖于请求和响应header里的参数类实现的，最终响应式从缓存中去，还是从服务端重新拉取，HTTP的缓存机制的流程如下所示：
 
-<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/okhttp/http_cache_structure.png"/>
+👉 点击图片查看大图
+
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/okhttp/http_cache_structure.png" width="600"/>
 
 HTTP的缓存可以分为两种：
 
