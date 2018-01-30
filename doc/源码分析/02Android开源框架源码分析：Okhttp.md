@@ -16,6 +16,12 @@
     - 2.3 CacheInterceptor
     - 2.4 ConnectInterceptor
     - 2.5 CallServerInterceptor
+- 三 连接机制
+    - 3.1 建立连接
+    - 3.2 连接池
+- 四 缓存机制
+    - 4.1 缓存策略
+    - 4.2 缓存管理
 
 在Android刀耕火种的哪个年代，我们做网络请求通常会选用HttpURLConnection或者Apache HTTP Client，这两者均支持HTTPS、流的上传和下载、配置超时和连接池等特性，但随着业务场景的负责化以及
 对流量消耗的优化需求，Okhttp应运而生，自诞生起，口碑就一直很好。
@@ -1026,7 +1032,7 @@ public final class CallServerInterceptor implements Interceptor {
 
 这篇文章就到这里，后续的文章我们会来分析Okhttp的缓存机制、连接机制、编辑吗机制等实现。
 
-## 二 连接机制
+## 三 连接机制
 
 连接的创建是在StreamAllocation对象统筹下完成的，我们前面也说过它早在RetryAndFollowUpInterceptor就被创建了，StreamAllocation对象
 主要用来管理两个关键角色：
@@ -1036,7 +1042,7 @@ public final class CallServerInterceptor implements Interceptor {
 
 在里初始化了一个StreamAllocation对象，我们说在这个StreamAllocation对象里初始化了一个Socket对象用来做连接，但是并没有
 
-### 2.2 建立连接
+### 3.1 创建连接
 
 我们在前面的ConnectInterceptor分析中已经说过，onnectInterceptor用来完成连接。而真正的连接在RealConnect中实现，连接由连接池ConnectPool来管理，连接池最多保
 持5个地址的连接keep-alive，每个keep-alive时长为5分钟，并有异步线程清理无效的连接。
@@ -1253,7 +1259,7 @@ public final class RealConnection extends Http2Connection.Listener implements Co
 
 最终调用Java里的套接字Socket里的connect()方法。
 
-### 2.2 连接池
+### 3.2 连接池
 
 我们知道在负责的网络环境下，频繁的进行建立Sokcet连接（TCP三次握手）和断开Socket（TCP四次分手）是非常消耗网络资源和浪费时间的，HTTP中的keepalive连接对于
 降低延迟和提升速度有非常重要的作用。
@@ -1413,7 +1419,7 @@ public final class ConnectionPool {
      } 
 }
 ```
-## 三 缓存机制
+## 四 缓存机制
 
 ### 3.1 缓存策略
 
@@ -1685,8 +1691,5 @@ return cache != null ? cache.internalCache : internalCache;
 关于这一部分的内容，可以参考我们之前写的内容[07Android开源框架源码分析：LruCache与DiskLruCache](https://github.com/guoxiaoxing/android-open-framwork-analysis/blob/master/doc/源码分析/07Android开源框架源码分析：LruCache与DiskLruCache.md)
 。
 
-## 附录
-
-这里提供一些Okhttp的常见用法。
-
+好了，到这里关于Okhttp的全部内容就都讲完了，可以说Okhttp是设计非常优良的一个库，有很多值得我们学习的地方，下一篇我们来分析它的好搭档Retrofit。
 
