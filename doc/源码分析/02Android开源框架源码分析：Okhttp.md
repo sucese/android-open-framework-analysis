@@ -22,6 +22,8 @@
 - 四 缓存机制
     - 4.1 缓存策略
     - 4.2 缓存管理
+    
+更多Android开源框架源码分析文章请参见[Android open framwork analysis](https://github.com/guoxiaoxing/android-open-framwork-analysis)。
 
 在Android刀耕火种的哪个年代，我们做网络请求通常会选用HttpURLConnection或者Apache HTTP Client，这两者均支持HTTPS、流的上传和下载、配置超时和连接池等特性，但随着业务场景的负责化以及
 对流量消耗的优化需求，Okhttp应运而生，自诞生起，口碑就一直很好。
