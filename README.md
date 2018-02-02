@@ -1,6 +1,12 @@
-# Android Open Framework Analysis
+# <img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/logo.png" alt="Android开源框架源码鉴赏" width="80" height="80" align="bottom"/> Android开源框架源码鉴赏
 
 本系列文章主要分析Android平台各类主流开源框架的原理与实践。
+
+
+[![License](https://img.shields.io/github/license/guoxiaoxing/android-open-framwork-analysis.svg)](https://jitpack.io/#guoxiaoxing/android-open-framwork-analysis) 
+[![Stars](https://img.shields.io/github/stars/guoxiaoxing/android-open-framwork-analysis.svg)](https://jitpack.io/#guoxiaoxing/android-open-framwork-analysis) 
+[![Stars](https://img.shields.io/github/forks/guoxiaoxing/android-open-framwork-analysis.svg)](https://jitpack.io/#guoxiaoxing/android-open-framwork-analysis) 
+[![Forks](https://img.shields.io/github/issues/guoxiaoxing/android-open-framwork-analysis.svg)](https://jitpack.io/#guoxiaoxing/android-open-framwork-analysis) 
 
 |库                                       |描述                                            |
 |:----------------------------------------|:----------------------------------------------|
@@ -15,13 +21,13 @@
 
 **源码分析**
 
-- 01Android开源框架源码赏析：Okio
-- [02Android开源框架源码赏析：Okhttp](https://github.com/guoxiaoxing/android-open-framwork-analysis/blob/master/doc/源码分析/02Android开源框架源码赏析：Okhttp.md)
-- 03Android开源框架源码赏析：Retrofit
-- 04Android开源框架源码赏析：Gson
-- 05Android开源框架源码赏析：Fresco
-- 06Android开源框架源码赏析：RxJava与RxAndroid
-- [07Android开源框架源码赏析：LruCache与DiskLruCache](https://github.com/guoxiaoxing/android-open-framwork-analysis/blob/master/doc/源码分析/07Android开源框架源码赏析：LruCache与DiskLruCache.md)
+- 01Android开源框架源码鉴赏：Okio
+- [02Android开源框架源码鉴赏：Okhttp](https://github.com/guoxiaoxing/android-open-framwork-analysis/blob/master/doc/源码分析/02Android开源框架源码鉴赏：Okhttp.md)
+- 03Android开源框架源码鉴赏：Retrofit
+- 04Android开源框架源码鉴赏：Gson
+- 05Android开源框架源码鉴赏：Fresco
+- 06Android开源框架源码鉴赏：RxJava与RxAndroid
+- [07Android开源框架源码鉴赏：LruCache与DiskLruCache](https://github.com/guoxiaoxing/android-open-framwork-analysis/blob/master/doc/源码分析/07Android开源框架源码鉴赏：LruCache与DiskLruCache.md)
 
 **Android组件框架**
 **实践指南**
