@@ -23,8 +23,8 @@
 - 01Android开源框架源码鉴赏：Okio
 - [02Android开源框架源码鉴赏：Okhttp](https://github.com/guoxiaoxing/android-open-framwork-analysis/blob/master/doc/源码分析/02Android开源框架源码鉴赏：Okhttp.md)
 - [03Android开源框架源码鉴赏：Retrofit](https://github.com/guoxiaoxing/android-open-framwork-analysis/blob/master/doc/源码分析/03Android开源框架源码鉴赏：Retrofit.md)
-- 04Android开源框架源码鉴赏：Gson
-- [05Android开源框架源码鉴赏：Fresco](https://github.com/guoxiaoxing/android-open-framwork-analysis/blob/master/doc/源码分析/05Android开源框架源码鉴赏：Fresco.md)
+- [04Android开源框架源码鉴赏：Fresco](https://github.com/guoxiaoxing/android-open-framwork-analysis/blob/master/doc/源码分析/04Android开源框架源码鉴赏：Fresco.md)
+- 05Android开源框架源码鉴赏：Gson
 - 06Android开源框架源码鉴赏：RxJava与RxAndroid
 - [07Android开源框架源码鉴赏：LruCache与DiskLruCache](https://github.com/guoxiaoxing/android-open-framwork-analysis/blob/master/doc/源码分析/07Android开源框架源码鉴赏：LruCache与DiskLruCache.md)
 
@@ -32,8 +32,11 @@
 
 - 01Android开源框架实践指南：Okio
 - 02Android开源框架实践指南：Okhttp
-- 03Android开源框架实践指南：etrofit
-- 04Android开源框架实践指南：gson
-- 05Android开源框架实践指南：resco
+- 03Android开源框架实践指南：Retrofit
+- 05Android开源框架实践指南：Fresco
+- 04Android开源框架实践指南：Gson
 - 06Android开源框架实践指南：RxJava与RxAndroid
 - 07Android开源框架实践指南：LruCache与DiskLruCache
+
+
+
