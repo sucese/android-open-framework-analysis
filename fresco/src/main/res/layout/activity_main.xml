@@ -2,12 +2,20 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:orientation="vertical"
     android:layout_height="match_parent"
+    android:padding="16dp"
     tools:mContext="com.guoxiaoxing.fresco.demo.FrescoActivity">
 
     <com.facebook.drawee.view.SimpleDraweeView
         android:id="@+id/drawee_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:layout_gravity="center" />
 
+    <Button
+        android:id="@+id/btn_load_image"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="加载图片" />
 </LinearLayout>
