@@ -120,7 +120,7 @@ simpleDraweeView.setImageURI(Uri.parse(url));
 1. 初始化Fresco。
 2. 获取DataSource。
 3. 绑定Controller与Hierarchy。
-4。从内存缓存/磁盘缓存/网络获取图片，并设置到对应的Drawable层。
+4. 从内存缓存/磁盘缓存/网络获取图片，并设置到对应的Drawable层。
 
 👉 注：Fresco里的类虽多，类名虽长，但都是基于接口和Abstract类的设计，每个模块自成一套继承体系，所以只要掌握了它们的继承关系以及不同模块之间的联系，整个
 流程还是比较简单的。
