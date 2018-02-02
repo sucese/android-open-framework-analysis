@@ -24,7 +24,7 @@
 这个系列的文章原来叫做《Android开源框架源码分析》，后来这些优秀开源库的代码看的多了，真的感觉大佬们写的代码真真美如画👍，所以就更名为《Android开源框架源码鉴赏》了。闲话
 不多说，我们进入正题，今天分析的开源库是Fresco。
 
-Fresco是一个功能完善的图片加载框架，在Android开发中有着广泛的应用，那么它作为一个图片加载框架有哪些特性，从而让它备受推崇呢？
+Fresco是一个功能完善的图片加载框架，在Android开发中有着广泛的应用，那么它作为一个图片加载框架，有哪些特色让它备受推崇呢？
 
 - 完善的内存管理功能，减少图片对内存的占用，即便在低端机器上也有着不错的表现。
 - 自定义图片加载的过程，可以先显示低清晰度图片或者缩略图，加载完成后再显示高清图，可以在加载的时候缩放和旋转图片。
@@ -41,7 +41,7 @@ Fresco的源码还是比较多的，看起来会比较负责，但是不怕，An
 
 👉 点击图片查看大图
 
-<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/fresco/fresco_structure.png" width="600/>
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/fresco/fresco_structure.png" width="600"/>
 
 - DraweeView：继承于ImageView，只是简单的读取xml文件的一些属性值和做一些初始化的工作，图层管理交由Hierarchy负责，图层数据获取交由负责。
 - DraweeHierarchy：由多层Drawable组成，每层Drawable提供某种功能（例如：缩放、圆角）。
@@ -113,7 +113,7 @@ simpleDraweeView.setImageURI(Uri.parse(url));
 
 👉 点击图片查看大图
 
-<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/fresco/image_load_sequence.png" width="600/>
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/fresco/image_load_sequence.png"/>
 
 嗯，图看起来有点大，但是不要紧，我按照颜色将整个流程分为了四大步：
 
@@ -129,7 +129,7 @@ simpleDraweeView.setImageURI(Uri.parse(url));
 
 👉 点击图片查看大图
 
-<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/fresco/image_load_structure.png" width="600/>
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/fresco/image_load_structure.png" width="600"/>
 
 接下来，我们就针对这两张图结合具体细节来一一分析。
 
