@@ -16,7 +16,7 @@
     - 3.2 读取缓存
     - 3.3 删除缓存
 
-更多Android开源框架源码分析文章请参见[Android open framwork analysis](https://github.com/guoxiaoxing/android-open-framwork-analysis)。
+更多Android开源框架源码分析文章请参见[Android open framework analysis](https://github.com/guoxiaoxing/android-open-framwork-analysis)。
 
 ## 一 Lru算法
 

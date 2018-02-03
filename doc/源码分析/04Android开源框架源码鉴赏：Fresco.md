@@ -18,8 +18,10 @@
 - 四 缓存机制
     - 3.1 内存缓存
     - 3.2 磁盘缓存
+    
+更多Android开源框架源码分析文章请参见[Android open framework analysis](https://github.com/guoxiaoxing/android-open-framwork-analysis)。
 
-这个系列的文章原来叫做《Android开源框架源码分析》，后来这些优秀开源库的代码看的多了，真的感觉大佬们写的代码真真美如画👍，所以就更名为《Android开源框架源码鉴赏》了。闲话
+这个系列的文章原来叫做《Android开源框架源码分析》，后来这些优秀开源库的代码看的多了，感觉大佬们代码写的真真美如画👍，所以就更名为《Android开源框架源码鉴赏》了。闲话
 不多说，我们进入正题，今天分析的开源库是Fresco。
 
 Fresco是一个功能完善的图片加载框架，在Android开发中有着广泛的应用，那么它作为一个图片加载框架，有哪些特色让它备受推崇呢？
@@ -32,7 +34,7 @@ Fresco是一个功能完善的图片加载框架，在Android开发中有着广�
 - 支持Webp。
 
 好，又吹了一波Fresco（人家好像也不给广告费T_T），但是光知道人家好并没有用，我们还需要为什么这么好，怎么实现的，日后在做我们的框架的时候偷师一手，岂不美哉。
-Fresco的源码还是比较多的，看起来会比较负责，但是不怕，Android的系统源码我们都啃下来了，还怕一个小小的Fresco吗😎。要更好的去理解Fresco的实现，还是要从
+Fresco的源码还是比较多的，看起来会比较费劲，但是不怕，Android的系统源码都被我们啃下来了，还怕一个小小的Fresco吗😎。要更好的去理解Fresco的实现，还是要从
 整体入手，了解它的模块和层次划分，层层推进，逐个理解，才能达到融会贯通的效果。
 
 由于Fresco比较大，我们先来看一下它的整体结构，有个整体的把握，Fresco的整体架构如下图所示：
@@ -50,7 +52,7 @@ Fresco的源码还是比较多的，看起来会比较负责，但是不怕，An
 - IO/Data：这一层便是数据层了，负责实现内存缓存、磁盘缓存、网络缓存和其他IO相关的功能。
 
 纵观整个Fresco的架构，DraweeView是门面，和用户进行交互，DraweeHierarchy是视图层级，管理图层，DraweeController是控制器，管理数据。它们构成了整个Fresco框架的三驾马车。当然还有我们
-幕后英雄Producer，所有的脏活累活都是它干的，最佳劳模👍~
+幕后英雄Producer，所有的脏活累活都是它干的，最佳劳模👍
 
 理解了Fresco整体的架构，我们还有了解在这套矿建里发挥重要作用的几个关键角色，如下所示：
 
@@ -66,7 +68,7 @@ xml文件或者Java代码里设置的属性信息都传入GenericDraweeHierarchy
 - DataSubscriber：接收DataSource返回的结果。
 - ImagePipeline：用来调取获取图片的接口。
 - Producer：加载与处理图片，它有多种实现，例如：NetworkFetcherProducer，LocalAssetFetcherProducer，LocalFileFetchProducer。从这些类的名字我们就可以知道它们是干什么的。
-Producer由ProducerFactory这个工厂类构建的，而且所有的Producer都是像Java的IO流那样，可以一层嵌套一层，最终只得到一个结果，这是一个很精巧的设计👍。
+Producer由ProducerFactory这个工厂类构建的，而且所有的Producer都是像Java的IO流那样，可以一层嵌套一层，最终只得到一个结果，这是一个很精巧的设计👍
 - Consumer：用来接收Producer产生的结果，它与Producer组成了生产者与消费者模式。
 
 注：Fresco源码里的类的名字都比较长，但是都是按照一定的命令规律来的，例如：以Supplier结尾的类都实现了Supplier接口，它可以提供某一个类型的对象（factory, generator, builder, closure等）。
@@ -74,16 +76,14 @@ Producer由ProducerFactory这个工厂类构建的，而且所有的Producer都�
 
 通过上面的描述，想必大家都Fresco有了一个整体的认识，那面对这样庞大的一个库，我们在去分析它的时候需要重点关注哪些点呢？🤔
 
-1. 图片的加载流程是什么？
-2. 缓存机制是怎么实现的，内存缓存是如何管理的，文件缓存又是怎么管理的？
-3. 图片加载框架一个老大难的问题就是内存管理，Fresco在内存管理是如何做的？
-4. 针对不同的图片格式PNG、JPEG、WEBP、GIF是如何处理？
-5。各种图片效果圆角、旋转都是如何实现的？
-6. ImagePipeline是如何实现的，Fresco的多线程并发是如何处理的？
+1. 图片加载流程
+2. DraweeController与DraweeHierarchy
+3. Producer与Consumer
+4. 缓存机制
 
 👉 注：Fresco里还大量运用各种设计模式，例如：Builder、Factory、Wrapper、Producer/Consumer、Adapter等，在阅读源码的时候，大家也要留心这些设计模式的应用与实践。
 
-接下来我们就带着这6个问题去源码中一探究竟。
+接下来我们就带着这4个问题去源码中一探究竟。
 
 ## 一 图片加载流程
 
@@ -113,7 +113,7 @@ simpleDraweeView.setImageURI(Uri.parse(url));
 
 <img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/fresco/image_load_sequence.png"/>
 
-嗯，图看起来有点大，但是不要紧，我按照颜色将整个流程分为了四大步：
+嗯，图看起来有点大，但是不要紧，我们按照颜色将整个流程分为了四大步：
 
 1. 初始化Fresco。
 2. 获取DataSource。
