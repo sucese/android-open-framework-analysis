@@ -18,8 +18,6 @@
 - 四 缓存机制
     - 3.1 内存缓存
     - 3.2 磁盘缓存
-- 五 内存管理机制
-- 六 图片解码
 
 这个系列的文章原来叫做《Android开源框架源码分析》，后来这些优秀开源库的代码看的多了，真的感觉大佬们写的代码真真美如画👍，所以就更名为《Android开源框架源码鉴赏》了。闲话
 不多说，我们进入正题，今天分析的开源库是Fresco。
@@ -549,6 +547,8 @@ PipelineDraweeController里。
 
 ### 1.3 绑定DraweeController与DraweeHierarchy
 
+👉 序列图 3.1 -> 3.7
+
 前面提到在SimpleDraweeView的setImageURI()方法里会为SimpleDraweeView设置前面构建好的PipelineDraweeController，如下所示：
 
 ```java
@@ -646,6 +646,36 @@ public abstract class AbstractDraweeController<T, INFO> implements
 
 ### 1.4 从内存缓存/磁盘缓存/网络获取图片，并设置到对应的Drawable层
 
+👉 序列图 4.1 -> 4.14
+
+这一块的内容主要执行上面创建的各种Producer，从从内存缓存/磁盘缓存/网络获取图片，并调用对应的Consumer消费结果，最终
+不同的Drawable设置到对应的图层中去，关于DraweeHierarchy与Producer我们下面都会详细的讲，我们先来看看上面层层请求到
+图片最终是如何设置到SimpleDraweeView中去的，如下所示：
+
+```java
+public class GenericDraweeHierarchy implements SettableDraweeHierarchy {
+    @Override
+    public void setImage(Drawable drawable, float progress, boolean immediate) {
+      drawable = WrappingUtils.maybeApplyLeafRounding(drawable, mRoundingParams, mResources);
+      drawable.mutate();
+      //mActualImageWrapper就是实际加载图片的那个图层，此处要设置的SimpleDraweeView最终要显示的图片。
+      mActualImageWrapper.setDrawable(drawable);
+      mFadeDrawable.beginBatchMode();
+      fadeOutBranches();
+      fadeInLayer(ACTUAL_IMAGE_INDEX);
+      setProgress(progress);
+      if (immediate) {
+        mFadeDrawable.finishTransitionImmediately();
+      }
+      mFadeDrawable.endBatchMode();
+    }  
+}
+```
+mActualImageWrapper就是实际加载图片的那个图层，此处要设置的SimpleDraweeView最终要显示的图片。
+
+如此，一个SimpleDraweeView的图片加载流程就完成了，面对如此长的流程，读者不免疑惑，我们只要掌握了整体流程，就可以
+分而治之，逐个击破。
+
 ## 二 DraweeHierarchy
 
 Fresco的图片效果是依赖于Drawee实现的，也就是Drawable层级。
@@ -675,7 +705,6 @@ public interface SettableDraweeHierarchy extends DraweeHierarchy {
    //由DraweeController调用，设置其他的Controller覆盖层
   void setControllerOverlay(Drawable drawable);
 }
-
 ```
 
 理解了DraweeHierarchy的大致接口，我们继续从以下几个角度来解析DraweeHierarchy：
@@ -907,7 +936,7 @@ public class GenericDraweeHierarchy implements SettableDraweeHierarchy {
 
 这样一个图层的载体GenericDraweeHierarchy就构建完成了，后续GenericDraweeHierarchy里的各种操作都是调用器内部的各种Drawable的方法来完成的。
 
-## 三 Producer
+## 三 Producer与Consumer
 
 我们前面说过Producer是Fresco的最佳劳模，所有的脏话累活都是它干的，我们来看看它的实现。
 
@@ -1048,11 +1077,21 @@ Fresco里的Producer是按照一定的顺序进行排列，一个执行完了，
 
 ## 三 缓存机制
 
-Fresco里有三级缓存，两级内存缓存，一级磁盘缓存，如下所示：
+Fresco里有三级缓存，两级内存缓存，一级磁盘缓存，如下图所示：
+
+👉 点击图片查看大图
+
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/fresco/three_level_cache_structure.png" width="600"/>
 
 - 未编码图片内存缓存
 - 已编码图片内存缓存
 - 磁盘缓存
+
+磁盘缓存因为涉及到文件读写要比内存缓存复杂一些，从下至上可以将磁盘缓存分为三层：
+
+- 缓冲缓存层：由BufferedDiskCache实现，提供缓冲功能。
+- 文件缓存层：由DiskStroageCache实现，提供实际的缓存功能。
+- 文件存储层：由DefaultDiskStorage实现，提供磁盘文件读写的功能。
 
 我们先来看看Fresco的缓存键值的设计，Fresco为缓存键设计了一个接口，如下所示：
 
@@ -1077,13 +1116,12 @@ CacheKey有两个实现类：
 
 ### 3.1 内存缓存
 
-
 我们前面说到，内存缓存分为两级：
 
-- 未编码图片内存缓存：
-- 已编码图片内存缓存：由BitmapMemoryCache
+- 未解码图片内存缓存：由EncodedImage描述真正的缓存对象。
+- 已解码图片内存缓存：由BitmapMemoryCache描述真正的缓存对象。
 
-它们的区别在于缓存的数据格式不同，未编码图片内存缓存使用的是，已编码图片内存缓存使用的是CloseableReference<CloseableBitmap>，它们的区别在于资源
+它们的区别在于缓存的数据格式不同，未编码图片内存缓存使用的是CloseableReference<CloseableBitmap>，已编码图片内存缓存使用的是CloseableReference<CloseableBitmap>，它们的区别在于资源
 的测量和释放方式是不同，它们使用VauleDescriptor来描述不同资源的数据大小，使用不同的ResourceReleaser来释放资源。
 
 内部的数据结构使用的是CountingLruMap，我们之前在文章[07Android开源框架源码赏析：LruCache与DiskLruCache](https://github.com/guoxiaoxing/android-open-framwork-analysis/blob/master/doc/源码分析/07Android开源框架源码赏析：LruCache与DiskLruCache.md)中
@@ -1104,6 +1142,16 @@ public interface MemoryCache<K, V> {
   public boolean contains(Predicate<K> predicate);
 }
 ```
+和内存缓存相关的还有一个接口MemoryTrimmable，实现该接口，并将自己注册的MemoryTrimmableRegistry中，当内存变化时，可以
+通知到自己，如下所示:
+
+```java
+public interface MemoryTrimmable {
+  //内存发生变化
+  void trim(MemoryTrimType trimType);
+}
+
+```
 
 我们来看看有哪些类直接或者间接实现了该缓存接口。
 
@@ -1112,14 +1160,48 @@ public interface MemoryCache<K, V> {
 - InstrumentedMemoryCache：也实现了MemoryCache接口，但它没有直接实现相应的功能，它相当于是个Wrapper类，对CountingMemoryCache进行了包装。增加了MemoryCacheTracker
 ，在缓存未命中时提供回调函数，供调用者实现自定义功能。
 
+在CountingMemoryCache内部使用Entry对象来描述缓存对，它包含以下信息：
+
+```java
+  static class Entry<K, V> {
+    //缓存key
+    public final K key;
+    //缓存对象
+    public final CloseableReference<V> valueRef;
+    // The number of clients that reference the value.
+    //缓存的引用计数
+    public int clientCount;
+    //该Entry对象是否被其所描述的缓存所追踪
+    public boolean isOrphan;
+    //缓存状态监听器
+    @Nullable public final EntryStateObserver<K> observer;
+}
+```
+
 👉 注：只有引用数量（clientCount）为0，且没有被缓存追踪（isOrphan = true）时缓存对象才可以被释放。
 
 我们接着开看看CountingMemoryCache是如何插入、获取和删除缓存的。
 
 #### 插入缓存
 
+首先我们要了解缓存的操作涉及到两个集合：
+
+```java
+  //待移除缓存集合，这里面的缓存没有被外面使用
+  @VisibleForTesting
+  final CountingLruMap<K, Entry<K, V>> mExclusiveEntries;
+
+  //所有缓存的集合，包括待移除的缓存
+  @GuardedBy("this")
+  @VisibleForTesting
+  final CountingLruMap<K, Entry<K, V>> mCachedEntries;
+```
+
+我们接着来看插入缓存的实现。
+
 ```java
 public class CountingMemoryCache<K, V> implements MemoryCache<K, V>, MemoryTrimmable {
+    
       public CloseableReference<V> cache(
           final K key,
           final CloseableReference<V> valueRef,
@@ -1134,7 +1216,7 @@ public class CountingMemoryCache<K, V> implements MemoryCache<K, V>, MemoryTrimm
         CloseableReference<V> oldRefToClose = null;
         CloseableReference<V> clientRef = null;
         synchronized (this) {
-          //2. 在缓存中查找要插入的对象，若存在则将其移除，并调用它的close()方法
+          //2. 在缓存中查找要插入的对象，若存在则将其从待移除缓存集合移除，并调用它的close()方法
           //当该缓存对象的引用数目为0的时候会释放掉该对象。
           oldExclusive = mExclusiveEntries.remove(key);
           Entry<K, V> oldEntry = mCachedEntries.remove(key);
@@ -1147,7 +1229,7 @@ public class CountingMemoryCache<K, V> implements MemoryCache<K, V>, MemoryTrimm
             Entry<K, V> newEntry = Entry.of(key, valueRef, observer);
             mCachedEntries.put(key, newEntry);
             //4. 将插入的对象包装成一个CloseableReference，重新包装对象主要是为了重设
-            //一下ResourceRelr，它会在释放资源的时候减少Entry的clientCount，并将该缓存对象
+            //一下ResourceReleaser，它会在释放资源的时候减少Entry的clientCount，并将该缓存对象
             // 加入到mExclusiveEntries中，mExclusiveEntries里存放的是已经被使用过的缓存（等待被释放），
             // 如果缓存对象可以释放，则直接释放缓存对象。
             clientRef = newClientReference(newEntry);
@@ -1165,7 +1247,7 @@ public class CountingMemoryCache<K, V> implements MemoryCache<K, V>, MemoryTrimm
 插入缓存主要做了以下几件事情：
 
 1. 检查是否需要更新缓存参数。
-2. 在缓存中查找要插入的对象，若存在则将其移除，并调用它的close()方法当该缓存对象的引用数目为0的时候会释放掉该对象。
+2. 在缓存中查找要插入的对象，若存在则将其从待移除缓存集合移除，并调用它的close()方法当该缓存对象的引用数目为0的时候会释放掉该对象。
 3. 检查是否缓存对象达到最大显示或者缓存池已满，如果都为否，则插入新缓存对象。
 4. 将插入的对象包装成一个CloseableReference，重新包装对象主要是为了重设一下ResourceRelr，它会在释放资源的时候减少Entry的clientCount，并将该缓存对象
 加入到mExclusiveEntries中，mExclusiveEntries里存放的是已经被使用过的缓存（等待被释放），如果缓存对象可以释放，则直接释放缓存对象。
@@ -1173,11 +1255,127 @@ public class CountingMemoryCache<K, V> implements MemoryCache<K, V>, MemoryTrimm
 
 #### 获取缓存
 
+```java
+public class CountingMemoryCache<K, V> implements MemoryCache<K, V>, MemoryTrimmable {
+    
+      @Nullable
+      public CloseableReference<V> get(final K key) {
+        Preconditions.checkNotNull(key);
+        Entry<K, V> oldExclusive;
+        CloseableReference<V> clientRef = null;
+        synchronized (this) {
+          //1. 查询该缓存，说明该缓存可能要被使用，则尝试将其从待移除缓存集合移除。
+          oldExclusive = mExclusiveEntries.remove(key);
+          //2. 从缓存集合中查询该缓存。
+          Entry<K, V> entry = mCachedEntries.get(key);
+          if (entry != null) {
+            //3. 如果查询到该缓存，将该缓存对象包装成一个CloseableReference，重新包装对象主要是为了重设
+           //一下ResourceReleaser，它会在释放资源的时候减少Entry的clientCount，并将该缓存对象
+            // 加入到mExclusiveEntries中，mExclusiveEntries里存放的是已经被使用过的缓存（等待被释放），
+            // 如果缓存对象可以释放，则直接释放缓存对象。
+            clientRef = newClientReference(entry);
+          }
+        }
+       //4. 判断是否需要通知待删除集合里的元素被移除了。
+        maybeNotifyExclusiveEntryRemoval(oldExclusive);
+        //5. 判断是否需要更新缓存参数。
+        maybeUpdateCacheParams();
+        //6. 判断是否需要释放资源，当超过了EvictEntries最大容量或者缓存池已满，则移除EvictEntries最早插入的对象。
+        maybeEvictEntries();
+        return clientRef;
+      }
+
+}
+```
+
+获取缓存主要执行了以下操作：
+
+1. 查询该缓存，说明该缓存可能要被使用，则尝试将其从待移除缓存集合移除。
+2. 从缓存集合中查询该缓存。
+3. 如果查询到该缓存，将该缓存对象包装成一个CloseableReference，重新包装对象主要是为了重设一下ResourceReleaser，它会在释放资源的时候减少Entry的clientCount，并将该缓存对象
+加入到mExclusiveEntries中，mExclusiveEntries里存放的是已经被使用过的缓存（等待被释放），如果缓存对象可以释放，则直接释放缓存对象。
+. 判断是否需要通知待删除集合里的元素被移除了。
+5. 判断是否需要更新缓存参数。
+6. 判断是否需要释放资源，当超过了EvictEntries最大容量或者缓存池已满，则移除EvictEntries最早插入的对象。
 
 #### 移除缓存
 
+移除缓存就是调用集合的removeAll()方法移除所有的元素，如下所示：
+
+```java
+public class CountingMemoryCache<K, V> implements MemoryCache<K, V>, MemoryTrimmable {
+    
+      public int removeAll(Predicate<K> predicate) {
+        ArrayList<Entry<K, V>> oldExclusives;
+        ArrayList<Entry<K, V>> oldEntries;
+        synchronized (this) {
+          oldExclusives = mExclusiveEntries.removeAll(predicate);
+          oldEntries = mCachedEntries.removeAll(predicate);
+          makeOrphans(oldEntries);
+        }
+        maybeClose(oldEntries);
+        maybeNotifyExclusiveEntryRemoval(oldExclusives);
+        maybeUpdateCacheParams();
+        maybeEvictEntries();
+        return oldEntries.size();
+      }
+}
+```
+这个方法比较简单，我们重点关注的是一个多次出现的方法：maybeEvictEntries()，它是用来调节总缓存的大小的，保证缓存不超过最大缓存个数和最大容量，如下所示：
+
+```java
+public class CountingMemoryCache<K, V> implements MemoryCache<K, V>, MemoryTrimmable {
+    
+      private void maybeEvictEntries() {
+        ArrayList<Entry<K, V>> oldEntries;
+        synchronized (this) {
+          int maxCount = Math.min(
+              //待移除集合最大持有的缓存个数
+              mMemoryCacheParams.maxEvictionQueueEntries,
+              //缓存集合最大持有的缓存个数 - 当前正在使用的缓存个数
+              mMemoryCacheParams.maxCacheEntries - getInUseCount());
+          int maxSize = Math.min(
+              //待移除集合最大持有的缓存容量
+              mMemoryCacheParams.maxEvictionQueueSize,
+              //缓存集合最大持有的缓存容量 - 当前正在使用的缓存容量
+              mMemoryCacheParams.maxCacheSize - getInUseSizeInBytes());
+          //1. 根据maxCount和maxSize，不断的从mExclusiveEntries移除队头的元素，知道满足缓存限制规则。
+          oldEntries = trimExclusivelyOwnedEntries(maxCount, maxSize);
+          //2. 将缓存Entry的isOrphan置为true，表示该Entry对象不再被追踪，等待被删除。
+          makeOrphans(oldEntries);
+        }
+        //3. 关闭缓存。
+        maybeClose(oldEntries);
+        //4. 通知缓存被关闭。
+        maybeNotifyExclusiveEntryRemoval(oldEntries);
+      }
+
+}
+```
+整个调整容量的流程就是根据当前缓存的个数和容量进行调整直到满足最大缓存个数和最大缓存容量的限制，如下所示：
+
+1. 根据maxCount和maxSize，不断的从mExclusiveEntries移除队头的元素，知道满足缓存限制规则。
+2. 将缓存Entry的isOrphan置为true，表示该Entry对象不再被追踪，等待被删除。
+3. 关闭缓存。
+4. 通知缓存被关闭。
+
+以上就是内存缓存的全部内容，我们接着来看磁盘缓存的实现。👇
 
 ### 3.2 磁盘缓存
+
+我们前面已经说过，磁盘缓存也分为三层，我们再来回顾一下，如下图所示：
+
+👉 点击图片查看大图
+
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/fresco/three_level_cache_structure.png" width="600"/>
+
+磁盘缓存因为涉及到文件读写要比内存缓存复杂一些，从下至上可以将磁盘缓存分为三层：
+
+- 缓冲缓存层：由BufferedDiskCache实现，提供缓冲功能。
+- 文件缓存层：由DiskStroageCache实现，提供实际的缓存功能。
+- 文件存储层：由DefaultDiskStorage实现，提供磁盘文件读写的功能。
+
+我们来看看相关的接口。
 
 磁盘缓存的接口是FileCache，如下所示：
 
@@ -1208,12 +1406,19 @@ public interface FileCache extends DiskTrimmable {
   DiskStorage.DiskDumpInfo getDumpInfo() throws IOException;
 }
 ```
-可以看到Fresco使用BinaryResource对象来描述磁盘缓存对象，通过该对象可以获取文件的输入流、字节码等信息。
+可以发现FileCahce接口继承于DisTrimmable，它是一个用来监听磁盘容量变化的接口，如下所示：
 
-实现该接口的是DiskStorageCache，
+```java
+public interface DiskTrimmable {
+  //当磁盘只有很少的空间可以使用的时候回调。
+  void trimToMinimum();
+  //当磁盘没有空间可以使用的时候回调
+  void trimToNothing();
+}
 
+```
 
-另外DiskSorage接口定义了Fresco里存取文件的逻辑与实现，如下所示：
+除了缓存接口DiskStorageCache，Fresco还定义了DiskStorage接口来封装文件IO的读写逻辑，如下所示：
 
 ```java
 public interface DiskStorage {
@@ -1274,7 +1479,7 @@ public interface DiskStorage {
     long getTimestamp();
     //大小
     long getSize();
-    //缓存对象
+    //Fresco使用BinaryResource对象来描述磁盘缓存对象，通过该对象可以获取文件的输入流、字节码等信息。
     BinaryResource getResource();
   }
 
@@ -1289,7 +1494,11 @@ public interface DiskStorage {
 }
 ```
 
-实现这个接口的是DefaultDiskStorage，
+理解了主要接口的功能我们就看看看主要的实现类：
+
+- DiskStroageCache：实现了FileCache接口与DiskTrimmable接口是缓存的主要实现类。
+- DefaultDiskStorage：实现了DiskStorage接口，封装了磁盘IO的读写逻辑。
+- BufferedDiskCache：在DiskStroageCache的基础上提供了Buffer功能。
 
 BufferedDiskCache主要提供了三个方面的功能：
 
@@ -1297,9 +1506,255 @@ BufferedDiskCache主要提供了三个方面的功能：
 - 提供了写入数据的办法，在writeToDiskCache中可以看出它提供的WriterCallback将要写入的EncodedImage转码成输入流；
 - 将get、put两个方法放在后台线程中运行（get时在缓冲区域查找时除外），分别都是容量为2的线程池。
 
+我们来看看它们的实现细节。
 
-## 四 内存管理机制
+上面DiskStorage里定义了个接口Entry来描述磁盘缓存对象的信息，真正持有缓存对象的是BinaryResource接口，它的实现类是FileBinaryResource，该类主要定义了
+File的一些操作，可以通过它获取文件的输入流和字节码等。
+
+此外，Fresco定义了每个文件的唯一描述符，此描述符由CacheKey的toString()方法导出字符串的SHA-1哈希码，然后该哈希码再经过Base64加密得出。
+
+我们来看看磁盘缓存的插入、查找和删除的实现。
+
+#### 插入缓存
+
+```java
+public class DiskStorageCache implements FileCache, DiskTrimmable {
+    
+   @Override
+     public BinaryResource insert(CacheKey key, WriterCallback callback) throws IOException {
+       //1. 先将磁盘缓存写入到缓存文件，这可以提供写缓存的并发速度。
+       SettableCacheEvent cacheEvent = SettableCacheEvent.obtain()
+           .setCacheKey(key);
+       mCacheEventListener.onWriteAttempt(cacheEvent);
+       String resourceId;
+       synchronized (mLock) {
+         //2. 获取缓存的resoucesId。
+         resourceId = CacheKeyUtil.getFirstResourceId(key);
+       }
+       cacheEvent.setResourceId(resourceId);
+       try {
+         //3. 创建要插入的文件（同步操作），这里构建了Inserter对象，该对象封装了具体的写入流程。
+         DiskStorage.Inserter inserter = startInsert(resourceId, key);
+         try {
+           inserter.writeData(callback, key);
+           //4. 提交新创建的缓存文件到缓存中。
+           BinaryResource resource = endInsert(inserter, key, resourceId);
+           cacheEvent.setItemSize(resource.size())
+               .setCacheSize(mCacheStats.getSize());
+           mCacheEventListener.onWriteSuccess(cacheEvent);
+           return resource;
+         } finally {
+           if (!inserter.cleanUp()) {
+             FLog.e(TAG, "Failed to delete temp file");
+           }
+         }
+       } catch (IOException ioe) {
+         //... 异常处理
+       } finally {
+         cacheEvent.recycle();
+       }
+     } 
+}
+```
+
+整个插入缓存的流程如下所示：
+
+1. 先将磁盘缓存写入到缓存文件，这可以提供写缓存的并发速度。
+2. 获取缓存的resoucesId。
+3. 创建要插入的文件（同步操作），这里构建了Inserter对象，该对象封装了具体的写入流程。
+4. 提交新创建的缓存文件到缓存中。
+
+我们重点来看看这两个方法startInsert()与endInsert()。
+
+```java
+public class DiskStorageCache implements FileCache, DiskTrimmable {
+    
+      //创建一个临时文件，后缀为.tmp
+      private DiskStorage.Inserter startInsert(
+          final String resourceId,
+          final CacheKey key)
+          throws IOException {
+        maybeEvictFilesInCacheDir();
+        //调用DefaultDiskStorage的insert()方法创建一个临时文件
+        return mStorage.insert(resourceId, key);
+      }
+
+      //将缓存文件提交到缓存中，如何缓存文件已经存在则尝试删除原来的文件
+      private BinaryResource endInsert(
+          final DiskStorage.Inserter inserter,
+          final CacheKey key,
+          String resourceId) throws IOException {
+        synchronized (mLock) {
+          BinaryResource resource = inserter.commit(key);
+          //将resourceId添加点resourceId集合中，DiskStorageCache里只维护了这一个集合
+          //来记录缓存
+          mResourceIndex.add(resourceId);
+          mCacheStats.increment(resource.size(), 1);
+          return resource;
+        }
+      }
+}
+```
 
 
+DiskStorageCache里只维护了这一个集合Set<String> mResourceIndex来记录缓存的Resource ID，而DefaultDiskStorage负责对磁盘上
+的缓存就行管理，体为DiskStorageCache提供索引功能。
 
+我们接着来看看查找缓存的实现。
+
+#### 查找缓存
+
+根据CacheKey查找缓存BinaryResource，如果缓存以及存在，则更新它的LRU访问时间戳，如果缓存不存在，则返回空。
+
+```java
+public class DiskStorageCache implements FileCache, DiskTrimmable {
+    
+     @Override
+     public BinaryResource getResource(final CacheKey key) {
+       String resourceId = null;
+       SettableCacheEvent cacheEvent = SettableCacheEvent.obtain()
+           .setCacheKey(key);
+       try {
+         synchronized (mLock) {
+           BinaryResource resource = null;
+           //1. 获取缓存的ResourceId，这里是一个列表，因为可能存在MultiCacheKey，它wrap多个CacheKey。
+           List<String> resourceIds = CacheKeyUtil.getResourceIds(key);
+           for (int i = 0; i < resourceIds.size(); i++) {
+             resourceId = resourceIds.get(i);
+             cacheEvent.setResourceId(resourceId);
+             //2. 获取ResourceId对应的BinaryResource。
+             resource = mStorage.getResource(resourceId, key);
+             if (resource != null) {
+               break;
+             }
+           }
+           if (resource == null) {
+             //3. 缓存没有命中，则执行onMiss()回调，并将resourceId从mResourceIndex移除。
+             mCacheEventListener.onMiss(cacheEvent);
+             mResourceIndex.remove(resourceId);
+           } else {
+             //4. 缓存命中，则执行onHit()回调，并将resourceId添加到mResourceIndex。
+             mCacheEventListener.onHit(cacheEvent);
+             mResourceIndex.add(resourceId);
+           }
+           return resource;
+         }
+       } catch (IOException ioe) {
+         //... 异常处理
+         return null;
+       } finally {
+         cacheEvent.recycle();
+       }
+     } 
+}
+```
+
+整个查找的流程如下所示：
+
+1. 获取缓存的ResourceId，这里是一个列表，因为可能存在MultiCacheKey，它wrap多个CacheKey。
+2. 获取ResourceId对应的BinaryResource。
+3. 缓存没有命中，则执行onMiss()回调，并将resourceId从mResourceIndex移除。
+4. 缓存命中，则执行onHit()回调，并将resourceId添加到mResourceIndex。mCacheEventListener.onHit(cacheEvent);
+
+这里会调用DefaultDiskStorage的getReSource()方法去查询缓存文件的路径并构建一个BinaryResource对象。
+
+Fresco在本地保存缓存文件的路径如下所示：
+
+```
+parentPath + File.separator + resourceId + type;
+```
+
+parentPath是根目录，type分为两种：
+
+- private static final String CONTENT_FILE_EXTENSION = ".cnt";
+- private static final String TEMP_FILE_EXTENSION = ".tmp";
+
+以上就是查询缓存的逻辑，我们接着来看看删除缓存的逻辑。
+             
+#### 删除缓存
+
+```java
+public class DiskStorageCache implements FileCache, DiskTrimmable {
+    
+      @Override
+      public void remove(CacheKey key) {
+        synchronized (mLock) {
+          try {
+            String resourceId = null;
+            //获取Resoucesid，根据resouceId移除缓存，并将自己从mResourceIndex移除。
+            List<String> resourceIds = CacheKeyUtil.getResourceIds(key);
+            for (int i = 0; i < resourceIds.size(); i++) {
+              resourceId = resourceIds.get(i);
+              mStorage.remove(resourceId);
+              mResourceIndex.remove(resourceId);
+            }
+          } catch (IOException e) {
+             //...移除处理
+          }
+        }
+      }
+}
+```
+删除缓存的逻辑也很简单，获取Resoucesid，根据resouceId移除缓存，并将自己从mResourceIndex移除。
+
+磁盘缓存也会自己调节自己的缓存大小来满足缓存最大容量限制条件，我们也来简单看一看。
+
+Fresco里的磁盘缓存过载时，会以不超过缓存容量的90%为目标进行清理，具体清理流程如下所示：
+
+```java
+public class DiskStorageCache implements FileCache, DiskTrimmable {
+    
+      @GuardedBy("mLock")
+      private void evictAboveSize(
+          long desiredSize,
+          CacheEventListener.EvictionReason reason) throws IOException {
+        Collection<DiskStorage.Entry> entries;
+        try {
+          //1. 获取缓存目录下所有文件的Entry的集合，以最近被访问的时间为序，最近被访问的Entry放在后面。
+          entries = getSortedEntries(mStorage.getEntries());
+        } catch (IOException ioe) {
+          //... 捕获异常
+        }
+    
+        //要删除的数据量
+        long cacheSizeBeforeClearance = mCacheStats.getSize();
+        long deleteSize = cacheSizeBeforeClearance - desiredSize;
+        //记录删除数据数量
+        int itemCount = 0;
+        //记录删除数据大小
+        long sumItemSizes = 0L;
+        //2. 循环遍历，从头部开始删除元素，直到剩余容量达到desiredSize位置。
+        for (DiskStorage.Entry entry: entries) {
+          if (sumItemSizes > (deleteSize)) {
+            break;
+          }
+          long deletedSize = mStorage.remove(entry);
+          mResourceIndex.remove(entry.getId());
+          if (deletedSize > 0) {
+            itemCount++;
+            sumItemSizes += deletedSize;
+            SettableCacheEvent cacheEvent = SettableCacheEvent.obtain()
+                .setResourceId(entry.getId())
+                .setEvictionReason(reason)
+                .setItemSize(deletedSize)
+                .setCacheSize(cacheSizeBeforeClearance - sumItemSizes)
+                .setCacheLimit(desiredSize);
+            mCacheEventListener.onEviction(cacheEvent);
+            cacheEvent.recycle();
+          }
+        }
+        //3. 更新容量，删除不需要的临时文件。
+        mCacheStats.increment(-sumItemSizes, -itemCount);
+        mStorage.purgeUnexpectedResources();
+      }
+}
+```
+整个清理流程可以分为以下几步：
+
+1. 获取缓存目录下所有文件的Entry的集合，以最近被访问的时间为序，最近被访问的Entry放在后面。
+2. 循环遍历，从头部开始删除元素，直到剩余容量达到desiredSize位置。
+3. 更新容量，删除不需要的临时文件。
+
+关于Fresco的源码分析就到这里了，本来还想再讲一讲Fresco内存管理方面的知识，但是这牵扯到Java Heap已经Android匿名共享内存方面的知识，相对比较深入，所以
+等着后续分析《Android内存管理框架》的时候结合着一块讲。
 
