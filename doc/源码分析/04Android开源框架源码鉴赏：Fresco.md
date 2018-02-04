@@ -1755,6 +1755,6 @@ public class DiskStorageCache implements FileCache, DiskTrimmable {
 2. 循环遍历，从头部开始删除元素，直到剩余容量达到desiredSize位置。
 3. 更新容量，删除不需要的临时文件。
 
-关于Fresco的源码分析就到这里了，本来还想再讲一讲Fresco内存管理方面的知识，但是这牵扯到Java Heap已经Android匿名共享内存方面的知识，相对比较深入，所以
+关于Fresco的源码分析就到这里了，本来还想再讲一讲Fresco内存管理方面的知识，但是这牵扯到Java Heap以及Android匿名共享内存方面的知识，相对比较深入，所以
 等着后续分析《Android内存管理框架》的时候结合着一块讲。
 
