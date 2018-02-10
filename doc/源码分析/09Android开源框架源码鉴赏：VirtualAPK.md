@@ -17,7 +17,7 @@
 从2012年开始，插件化技术得到了很大的发展，究其原因，主要是因为随着业务的增长，主工程变得越来越难以维护，而且随着公司业务的扩展，原来的主应用也逐渐分化了多个子应用，研发团队也由
 一个变成多个，但是子应用仍然需要主应用的流量入口优势，种种业务场景的需求，极大地促进了插件化技术的发展。
 
-就目前而言，主流的插件化技术有以下几种：
+就目前而言，主流的插件化框架有以下几种：
 
 <img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/virtualapk/plugin_framework_comparison.png" width="500"/>
 
@@ -64,11 +64,11 @@
 
 要理解一套框架，首先需要从整体去把握它，理解它的构造和层次划分，然后逐个去分析，VirtualAPK的整体架构图如下图所示：
 
-<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/virtualapk/virtual_apk_structure.png" width="500"/>
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/virtualapk/virtual_apk_structure.png" width="600"/>
 
 整体的源码结构也并不复杂，如下图所示：
 
-<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/virtualapk/virtual_apk_source_structure.png" width="500"/>
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/virtualapk/virtual_apk_source_structure.png" width="600"/>
 
 ## 一 VirtualAPK的初始化路程
 
@@ -265,6 +265,11 @@ String pluginPath = Environment.getExternalStorageDirectory().getAbsolutePath().
 File plugin = new File(pluginPath);
 PluginManager.getInstance(base).loadPlugin(plugin);
 ```
+
+APK的加载流程如下图所示：
+
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/virtualapk/apk_load_structure.png" width="600"/>
+
 
 我们可以看到上面调用loadPlugin()方法去加载一个APK，我们来看一下它的实现。
 
