@@ -64,11 +64,11 @@
 
 要理解一套框架，首先需要从整体去把握它，理解它的构造和层次划分，然后逐个去分析，VirtualAPK的整体架构图如下图所示：
 
-<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/virtualapk/virtual_apk_structure.png" width="600"/>
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/virtualapk/virtual_apk_structure.png" width="500"/>
 
 整体的源码结构也并不复杂，如下图所示：
 
-<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/virtualapk/virtual_apk_source_structure.png" width="600"/>
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/virtualapk/virtual_apk_source_structure.png" width="500"/>
 
 ## 一 VirtualAPK的初始化路程
 
@@ -268,7 +268,7 @@ PluginManager.getInstance(base).loadPlugin(plugin);
 
 APK的加载流程如下图所示：
 
-<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/virtualapk/apk_load_structure.png" width="600"/>
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/virtualapk/apk_load_structure.png" width="700"/>
 
 
 我们可以看到上面调用loadPlugin()方法去加载一个APK，我们来看一下它的实现。
