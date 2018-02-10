@@ -1,1 +1,1 @@
-include ':rxjava', ':okhttp', ':gson', ':fresco', ':lrucache', ':okio', ':retrofit', ':leakcanary', ':greendao'
+include ':rxjava', ':okhttp', ':gson', ':fresco', ':lrucache', ':okio', ':retrofit', ':leakcanary', ':greendao', ':arouter', ':virtualapk-host', ':virtualapk-plugin'

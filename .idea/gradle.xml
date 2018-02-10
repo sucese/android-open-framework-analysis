@@ -8,6 +8,7 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/arouter" />
             <option value="$PROJECT_DIR$/fresco" />
             <option value="$PROJECT_DIR$/greendao" />
             <option value="$PROJECT_DIR$/gson" />
@@ -17,6 +18,8 @@
             <option value="$PROJECT_DIR$/okio" />
             <option value="$PROJECT_DIR$/retrofit" />
             <option value="$PROJECT_DIR$/rxjava" />
+            <option value="$PROJECT_DIR$/virtualapk-host" />
+            <option value="$PROJECT_DIR$/virtualapk-plugin" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />
