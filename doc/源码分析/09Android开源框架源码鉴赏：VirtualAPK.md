@@ -6,7 +6,18 @@
 
 **文章目录**
 
-主流插件化技术对比，如下图所示：
+- 一 VirtualAPK的初始化路程
+- 二 VirtualAPK的的加载流程
+- 三 VirtualAPK启动组件的流程
+    - 3.1 Activity
+    - 3.2 Service
+    - 3.3 Broadcast Receiver
+    - 3.4 Content Provider
+
+从2012年开始，插件化技术得到了很大的发展，究其原因，主要是因为随着业务的增长，主工程变得越来越难以维护，而且随着公司业务的扩展，原来的主应用也逐渐分化了多个子应用，研发团队也由
+一个变成多个，但是子应用仍然需要主应用的流量入口优势，种种业务场景的需求，极大地促进了插件化技术的发展。
+
+就目前而言，主流的插件化技术有以下几种：
 
 <img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/virtualapk/plugin_framework_comparison.png" width="500"/>
 
@@ -16,6 +27,12 @@
 - VirtualAPK：VirtualAPK侧重于加载业务模块，业务模块通常和宿主都有一定的耦合关系，例如需要访问宿主提供的订单、账号等数据信息等，这也比较符合滴滴业务型的业务特点。
 
 也就是说如果我们需要去加载一个内部业务模块，并且这个业务模块很难从主工程中完全解耦，那么我们会优先选择VirtualAPK这种方案。
+
+>A powerful and lightweight plugin framework for Android
+
+官方网站：https://github.com/didi/VirtualAPK
+
+源码版本：0.9.1
 
 按照国际惯例，在分析VirtualAPK的源码实现之前，先吹一波它的优点😎。如下所示：
 
@@ -49,7 +66,7 @@
 
 <img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/virtualapk/virtual_apk_structure.png" width="500"/>
 
-整体的源码结构也并不复杂，入下图所示：
+整体的源码结构也并不复杂，如下图所示：
 
 <img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/virtualapk/virtual_apk_source_structure.png" width="500"/>
 
@@ -218,18 +235,14 @@ public class PluginManager {
 }
 ```
 
-处了Instrumentation对象，它还根据不同的Android版本分别从ActivityManagerNative中Hook对象IActivityManager，那么这个IActivityManager对象是什么呢？🤔
+除了Instrumentation对象，它还根据不同的Android版本分别从ActivityManagerNative中Hook对象IActivityManager，那么这个IActivityManager对象是什么呢？🤔
 
 我们之前在文章[02Android组件框架：Android组件管理者ActivityManager](https://github.com/guoxiaoxing/android-open-source-project-analysis/blob/master/doc/Android系统应用框架篇/Android组件框架/02Android组件框架：Android组件管理者ActivityManager.md)中
 曾经聊到过它是ActivityManagerService的代理对象，通过它可以和ActivityManagerService进行IPC通信，并请求它完成一些组件管理上的工作。我们平时调用的startActivity()、startService()、bindService()等组件调用的方法
 最终都是调用ActivityManagerService里的方法来完成的。
 
+以上便是VIrtualAPK的初始化流程，我们接着来看VIrtualAPK是如何去加载一个APK文件的。👇
 
-```java
-public class PluginManager {
-    
-  
-```
 ## 二 VirtualAPK的的加载流程
 
 VirtualAPK对于加载的APK文件没有额外的约束，只需要添加VirtualAPK的插件进行编译，如下所示：
@@ -434,23 +447,7 @@ Virtual是采用占坑的方式来绕过校验的，它在库里的Manifest文�
         <activity android:name=".D$6" android:launchMode="singleInstance"/>
         <activity android:name=".D$7" android:launchMode="singleInstance"/>
         <activity android:name=".D$8" android:launchMode="singleInstance"/>
-
-        <!-- Local Service running in main process -->
-        <service android:name="com.didi.virtualapk.delegate.LocalService" />
-
-        <!-- Daemon Service running in child process -->
-        <service android:name="com.didi.virtualapk.delegate.RemoteService" android:process=":daemon">
-            <intent-filter>
-                <action android:name="${applicationId}.intent.ACTION_DAEMON_SERVICE" />
-            </intent-filter>
-        </service>
-
-        <provider
-            android:name="com.didi.virtualapk.delegate.RemoteContentProvider"
-            android:authorities="${applicationId}.VirtualAPK.Provider"
-            android:process=":daemon" />
-
-    </application>
+ </application>
 ```
 
 
@@ -661,7 +658,7 @@ class StubActivityInfo {
 
 - 标准启动模式：com.didi.virtualapk.core.$1，每次自增1。
 - 栈顶复用模式：com.didi.virtualapk.core.$，每次自增1，范围从1 - 8.
-- 栈内模式：com.didi.virtualapk.core.C$，每次自增1，范围从1 - 8.
+- 栈内复用模式：com.didi.virtualapk.core.C$，每次自增1，范围从1 - 8.
 - 单例模式模式：com.didi.virtualapk.core.D$，每次自增1，范围从1 - 8.
 
 既然这里为了染过检验把要启动的Activity变成了占坑的StubActivity。那么真正启动Activity的时候就要再次变回来，我们接着分析。
@@ -772,20 +769,22 @@ public class ActivityManagerProxy implements InvocationHandler {
 LocalService和RemoteService都已经在VirtualAPK的Manifest文件里进行了注册，如下所示：
 
 ```xml
-<!-- Local Service running in main process -->
-<service android:name="com.didi.virtualapk.delegate.LocalService" />
-
-<!-- Daemon Service running in child process -->
-<service android:name="com.didi.virtualapk.delegate.RemoteService" android:process=":daemon">
-    <intent-filter>
-        <action android:name="${applicationId}.intent.ACTION_DAEMON_SERVICE" />
-    </intent-filter>
-</service>
+<application>
+    <!-- Local Service running in main process -->
+    <service android:name="com.didi.virtualapk.delegate.LocalService" />
+    
+    <!-- Daemon Service running in child process -->
+    <service android:name="com.didi.virtualapk.delegate.RemoteService" android:process=":daemon">
+        <intent-filter>
+            <action android:name="${applicationId}.intent.ACTION_DAEMON_SERVICE" />
+        </intent-filter>
+    </service>
+</application>
 ```
 
 我们接着来看看它们俩的具体实现。
 
-#### 3.2.1 RemoteService
+#### 3.2.1 LocalService
 
 ```java
 public class LocalService extends Service {
@@ -1091,10 +1090,13 @@ public class PluginManager {
 ContentProvider也在Manifest文件里进行了占坑注册，如下所示：
 
 ```xml
-<provider
-        android:name="com.didi.virtualapk.delegate.RemoteContentProvider"
-        android:authorities="${applicationId}.VirtualAPK.Provider"
-        android:process=":daemon" />
+
+<application>
+    <provider
+            android:name="com.didi.virtualapk.delegate.RemoteContentProvider"
+            android:authorities="${applicationId}.VirtualAPK.Provider"
+            android:process=":daemon" />
+</application>
 ```
 
 获取到IContentProvider对象后，就可以对它进行动态代理，拦截它里面的操作，例如：query、insert、update、delete等操，在这些操作里吧用户调用的URI缓存占坑Provider的URI，再
@@ -1212,3 +1214,5 @@ query()方法的逻辑也十分简单，如下所示：
 - Service：通过代理Service的方式去分发，VirtualAPK使用了两个代理Service，即LocalService和RemoteService。
 - BroadcastReceiver：将静态广播转为动态广播。
 - ContentProvider：通过一个代理Provider进行操作的分发。
+
+以上便是整个VrtualAPK框架的原理分析。
