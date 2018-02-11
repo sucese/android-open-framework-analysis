@@ -6,13 +6,16 @@
 
 **文章目录**
 
-- 一 VirtualAPK的初始化路程
+- 一 VirtualAPK的初始化流程
 - 二 VirtualAPK的的加载流程
 - 三 VirtualAPK启动组件的流程
     - 3.1 Activity
     - 3.2 Service
     - 3.3 Broadcast Receiver
     - 3.4 Content Provider
+    
+更多Android开源框架源码分析文章请参见[Android open framwork analysis](https://github.com/guoxiaoxing/android-open-framwork-analysis)。
+
 
 从2012年开始，插件化技术得到了很大的发展，究其原因，主要是因为随着业务的增长，主工程变得越来越难以维护，而且随着公司业务的扩展，原来的主应用也逐渐分化了多个子应用，研发团队也由
 一个变成多个，但是子应用仍然需要主应用的流量入口优势，种种业务场景的需求，极大地促进了插件化技术的发展。
@@ -70,7 +73,7 @@
 
 <img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/virtualapk/virtual_apk_source_structure.png" width="500"/>
 
-## 一 VirtualAPK的初始化路程
+## 一 VirtualAPK的初始化流程
 
 在使用VirtualAPK之前，我们需要多VirtualAPK进行初始化，如下所示：
 
