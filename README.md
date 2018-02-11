@@ -16,8 +16,8 @@
 |[Fresco](https://github.com/facebook/fresco)|An Android library for managing images and the memory they use
 |[RxJava与RxAndroid](https://github.com/ReactiveX/RxJava)|A library for composing asynchronous and event-based programs using observable sequences for the Java VM
 |[LruCache与DiskLruCache](https://github.com/JakeWharton/DiskLruCache)|Java implementation of a Disk-based LRU cache which specifically targets Android compatibility
-|[VirtualAPK](https://github.com/JakeWharton/DiskLruCache)|A powerful and lightweight plugin framework for Android
 |[ARouter](https://github.com/alibaba/ARouter)|An android router middleware that help app navigating to activities and custom services.
+|[VirtualAPK](https://github.com/JakeWharton/DiskLruCache)|A powerful and lightweight plugin framework for Android
 
 **Android开源框架源码分析**
 
@@ -30,7 +30,6 @@
 - [07Android开源框架源码鉴赏：LruCache与DiskLruCache](https://github.com/guoxiaoxing/android-open-framwork-analysis/blob/master/doc/源码分析/07Android开源框架源码鉴赏：LruCache与DiskLruCache.md)
 - [08Android开源框架源码鉴赏：ARouter](https://github.com/guoxiaoxing/android-open-framwork-analysis/blob/master/doc/源码分析/08Android开源框架源码鉴赏：ARouter.md)
 - [09Android开源框架源码鉴赏：VirtualAPK](https://github.com/guoxiaoxing/android-open-framwork-analysis/blob/master/doc/源码分析/09Android开源框架源码鉴赏：VirtualAPK.md)
-- [10Android开源框架源码鉴赏：ARouter](https://github.com/guoxiaoxing/android-open-framwork-analysis/blob/master/doc/源码分析/10Android开源框架源码鉴赏：ARouter.md)
 
 **Android开源框架实践指南**
 
