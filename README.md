@@ -15,9 +15,12 @@
 |[Gson](https://github.com/google/gson)|A Java serialization/deserialization library to convert Java Objects into JSON and back
 |[Fresco](https://github.com/facebook/fresco)|An Android library for managing images and the memory they use
 |[RxJava与RxAndroid](https://github.com/ReactiveX/RxJava)|A library for composing asynchronous and event-based programs using observable sequences for the Java VM
-|[LruCache与DiskLruCache](https://github.com/JakeWharton/DiskLruCache)|Java implementation of a Disk-based LRU cache which specifically targets Android compatibility
+|[LruCache](https://developer.android.com/reference/android/util/LruCache.html)|A tiny memory cache implementation which uses a LRU policy.
+|[DiskLruCache](https://github.com/JakeWharton/DiskLruCache)|Java implementation of a Disk-based LRU cache which specifically targets Android compatibility
 |[ARouter](https://github.com/alibaba/ARouter)|An android router middleware that help app navigating to activities and custom services.
 |[VirtualAPK](https://github.com/JakeWharton/DiskLruCache)|A powerful and lightweight plugin framework for Android
+|[LeakCanary](https://github.com/square/leakcanary)|A memory leak detection library for Android and Java.
+|[BlockCanary](https://github.com/markzhai/AndroidPerformanceMonitor)|A transparent ui-block detection library for Android. (known as BlockCanary)
 
 **Android开源框架源码分析**
 
@@ -30,6 +33,8 @@
 - [07Android开源框架源码鉴赏：LruCache与DiskLruCache](https://github.com/guoxiaoxing/android-open-framwork-analysis/blob/master/doc/源码分析/07Android开源框架源码鉴赏：LruCache与DiskLruCache.md)
 - [08Android开源框架源码鉴赏：ARouter](https://github.com/guoxiaoxing/android-open-framwork-analysis/blob/master/doc/源码分析/08Android开源框架源码鉴赏：ARouter.md)
 - [09Android开源框架源码鉴赏：VirtualAPK](https://github.com/guoxiaoxing/android-open-framwork-analysis/blob/master/doc/源码分析/09Android开源框架源码鉴赏：VirtualAPK.md)
+- [10Android开源框架源码鉴赏：LeakCanary与BlockCanary](https://github.com/guoxiaoxing/android-open-framwork-analysis/blob/master/doc/源码分析/10Android开源框架源码鉴赏：LeakCanary与BlockCanary.md)
+- [11Android开源框架源码鉴赏：EventBus](https://github.com/guoxiaoxing/android-open-framwork-analysis/blob/master/doc/源码分析/11Android开源框架源码鉴赏：EventBus.md)
 
 **Android开源框架实践指南**
 
