@@ -9,6 +9,7 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/arouter" />
+            <option value="$PROJECT_DIR$/eventbus" />
             <option value="$PROJECT_DIR$/fresco" />
             <option value="$PROJECT_DIR$/greendao" />
             <option value="$PROJECT_DIR$/gson" />
