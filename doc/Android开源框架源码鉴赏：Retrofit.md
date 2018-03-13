@@ -70,16 +70,6 @@ public final class Retrofit {
     final boolean validateEagerly;  
 }
 ```
-
-
-
-
-```java
-public final class Retrofit {
-    
-}
-```
-
 ## 二 Api创建流程
 
 Api的创建是由Retrofit的create()方法完成的，如下所示：
