@@ -1692,8 +1692,5 @@ return cache != null ? cache.internalCache : internalCache;
 除了两个类以外，Okhttp还封装了一个文件系统类FileSystem类，这个类利用Okio这个库对Java的FIle操作进行了一层封装，简化了IO操作。理解了这些剩下的就是DiskLruCahe里的插入缓存
 、获取缓存和删除缓存的操作。
 
-关于这一部分的内容，可以参考我们之前写的内容[07Android开源框架源码分析：LruCache与DiskLruCache](https://github.com/guoxiaoxing/android-open-framwork-analysis/blob/master/doc/源码分析/07Android开源框架源码分析：LruCache与DiskLruCache.md)
-。
-
-好了，到这里关于Okhttp的全部内容就都讲完了，可以说Okhttp是设计非常优良的一个库，有很多值得我们学习的地方，下一篇我们来分析它的好搭档Retrofit。
+关于这一部分的内容，可以参考我们之前写的内容[LruCache与DiskLruCache](https://github.com/guoxiaoxing/android-open-framwork-analysis/blob/master/doc/Android开源框架源码鉴赏：LruCache与DiskLruCache.md)好了，到这里关于Okhttp的全部内容就都讲完了，可以说Okhttp是设计非常优良的一个库，有很多值得我们学习的地方，下一篇我们来分析它的好搭档Retrofit。
 
