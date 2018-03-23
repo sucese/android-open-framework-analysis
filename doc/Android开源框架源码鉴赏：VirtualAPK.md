@@ -16,7 +16,6 @@
     
 更多Android开源框架源码分析文章请参见[Android open framwork analysis](https://github.com/guoxiaoxing/android-open-framwork-analysis)。
 
-
 从2012年开始，插件化技术得到了很大的发展，究其原因，主要是因为随着业务的增长，主工程变得越来越难以维护，而且随着公司业务的扩展，原来的主应用也逐渐分化了多个子应用，研发团队也由
 一个变成多个，但是子应用仍然需要主应用的流量入口优势，种种业务场景的需求，极大地促进了插件化技术的发展。
 

@@ -20,9 +20,11 @@
 |[RxAndroid](https://github.com/guoxiaoxing/android-open-framwork-analysis/blob/master/doc/Android开源框架源码鉴赏：RxAndroid.md)|RxJava bindings for Android
 |[LruCache与DiskLruCache](https://github.com/guoxiaoxing/android-open-framwork-analysis/blob/master/doc/Android开源框架源码鉴赏：LruCache与DiskLruCache.md)|A tiny memory cache implementation which uses a LRU policy.
 |[ARouter](https://github.com/guoxiaoxing/android-open-framwork-analysis/blob/master/doc/Android开源框架源码鉴赏：ARouter.md)|An android router middleware that help app navigating to activities and custom services.
-|[VirtualAPK](https://github.com/guoxiaoxing/android-open-framwork-analysis/blob/master/doc/Android开源框架源码鉴赏：VIrtualAPK.md)|A powerful and lightweight plugin framework for Android
 |[LeakCanary](https://github.com/guoxiaoxing/android-open-framwork-analysis/blob/master/doc/Android开源框架源码鉴赏：LeakCanary.md)|A memory leak detection library for Android and Java.
 |[BlockCanary](https://github.com/guoxiaoxing/android-open-framwork-analysis/blob/master/doc/Android开源框架源码鉴赏：BlockCanary.md)|A transparent ui-block detection library for Android. (known as BlockCanary)
 |[EventBus](https://github.com/guoxiaoxing/android-open-framwork-analysis/blob/master/doc/Android开源框架源码鉴赏：EventBus.md)|Event bus for Android and Java that simplifies communication between Activities, Fragments, Threads, Services, etc. Less code, better quality. 
+|[Tinker](https://github.com/guoxiaoxing/android-open-framwork-analysis/blob/master/doc/Android开源框架源码鉴赏：Tinker.md)|Event bus for Android and Java that simplifies communication between Activities, Fragments, Threads, Services, etc. Less code, better quality. 
+|[VirtualAPK](https://github.com/guoxiaoxing/android-open-framwork-analysis/blob/master/doc/Android开源框架源码鉴赏：VIrtualAPK.md)|A powerful and lightweight plugin framework for Android
+|[Atlas](https://github.com/guoxiaoxing/android-open-framwork-analysis/blob/master/doc/Android开源框架源码鉴赏：Atlas.md)|A powerful Android Dynamic Component Framework. 
 
 
