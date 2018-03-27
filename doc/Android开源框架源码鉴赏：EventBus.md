@@ -25,6 +25,11 @@ EventBus在应用里的应用是十分广泛的，那么除了EventBus这种应�
 
 相当于这些方式EventBus的优点在于使用简单，事件的订阅者和发布者解耦，但是它也有有自己的问题，例如大量Event类的管理，这个我们后续会说。
 
+> Event bus for Android and Java that simplifies communication between Activities, Fragments, Threads, Services, etc. Less code, better quality.
+
+- 官方网站：https://github.com/greenrobot/EventBus
+- 源码版本：3.1.1
+
 我们先来看一下EventBus的源码结构，如下所示：
 
 <img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/eventbus/event_bus_source_code.png"/>
