@@ -8,7 +8,7 @@
 
 > [Android Open Framework analysis](https://github.com/guoxiaoxing/android-open-framework-analysis)项目主要用来分析Android平台主流开源框架的源码与原理实现。
 
-**文章目录**e*
+**文章目录**
 
 - 一 请求与响应流程
     - 1.1 请求的封装
