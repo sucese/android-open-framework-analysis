@@ -1,12 +1,14 @@
 # Android开源框架源码鉴赏：AndFix
 
-**关于作者**
+作者：[郭孝星](https://github.com/guoxiaoxing)
 
->郭孝星，程序员，吉他手，主要从事Android平台基础架构方面的工作，欢迎交流技术方面的问题，可以去我的[Github](https://github.com/guoxiaoxing)提issue或者发邮件至guoxiaoxingse@163.com与我交流。
+校对：[郭孝星](https://github.com/guoxiaoxing)
 
-**文章目录**
+**关于项目**
 
-更多Android开源框架源码分析文章请参见[Android open framwork analysis](https://github.com/guoxiaoxing/android-open-framwork-analysis)。
+> [Android Open Framework analysis](https://github.com/guoxiaoxing/android-open-framework-analysis)项目主要用来分析Android平台主流开源框架的源码与原理实现。
+
+**文章目录**e
 
 >An HTTP+HTTP/2 client for Android and Java applications.
 

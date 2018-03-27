@@ -2,21 +2,35 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/android-open-framwork-analysis.iml" filepath="$PROJECT_DIR$/android-open-framwork-analysis.iml" />
+      <module fileurl="file://$PROJECT_DIR$/android-open-framework-analysis.iml" filepath="$PROJECT_DIR$/android-open-framework-analysis.iml" />
+      <module fileurl="file://$PROJECT_DIR$/arouter/arouter.iml" filepath="$PROJECT_DIR$/arouter/arouter.iml" />
       <module fileurl="file://$PROJECT_DIR$/arouter/arouter.iml" filepath="$PROJECT_DIR$/arouter/arouter.iml" />
       <module fileurl="file://$PROJECT_DIR$/atlas/atlas.iml" filepath="$PROJECT_DIR$/atlas/atlas.iml" />
+      <module fileurl="file://$PROJECT_DIR$/atlas/atlas.iml" filepath="$PROJECT_DIR$/atlas/atlas.iml" />
+      <module fileurl="file://$PROJECT_DIR$/eventbus/eventbus.iml" filepath="$PROJECT_DIR$/eventbus/eventbus.iml" />
       <module fileurl="file://$PROJECT_DIR$/eventbus/eventbus.iml" filepath="$PROJECT_DIR$/eventbus/eventbus.iml" />
       <module fileurl="file://$PROJECT_DIR$/fresco/fresco.iml" filepath="$PROJECT_DIR$/fresco/fresco.iml" />
+      <module fileurl="file://$PROJECT_DIR$/fresco/fresco.iml" filepath="$PROJECT_DIR$/fresco/fresco.iml" />
+      <module fileurl="file://$PROJECT_DIR$/greendao/greendao.iml" filepath="$PROJECT_DIR$/greendao/greendao.iml" />
       <module fileurl="file://$PROJECT_DIR$/greendao/greendao.iml" filepath="$PROJECT_DIR$/greendao/greendao.iml" />
       <module fileurl="file://$PROJECT_DIR$/gson/gson.iml" filepath="$PROJECT_DIR$/gson/gson.iml" />
+      <module fileurl="file://$PROJECT_DIR$/gson/gson.iml" filepath="$PROJECT_DIR$/gson/gson.iml" />
+      <module fileurl="file://$PROJECT_DIR$/leakcanary/leakcanary.iml" filepath="$PROJECT_DIR$/leakcanary/leakcanary.iml" />
       <module fileurl="file://$PROJECT_DIR$/leakcanary/leakcanary.iml" filepath="$PROJECT_DIR$/leakcanary/leakcanary.iml" />
       <module fileurl="file://$PROJECT_DIR$/lrucache/lrucache.iml" filepath="$PROJECT_DIR$/lrucache/lrucache.iml" />
+      <module fileurl="file://$PROJECT_DIR$/lrucache/lrucache.iml" filepath="$PROJECT_DIR$/lrucache/lrucache.iml" />
+      <module fileurl="file://$PROJECT_DIR$/okhttp/okhttp.iml" filepath="$PROJECT_DIR$/okhttp/okhttp.iml" />
       <module fileurl="file://$PROJECT_DIR$/okhttp/okhttp.iml" filepath="$PROJECT_DIR$/okhttp/okhttp.iml" />
       <module fileurl="file://$PROJECT_DIR$/okio/okio.iml" filepath="$PROJECT_DIR$/okio/okio.iml" />
+      <module fileurl="file://$PROJECT_DIR$/okio/okio.iml" filepath="$PROJECT_DIR$/okio/okio.iml" />
       <module fileurl="file://$PROJECT_DIR$/retrofit/retrofit.iml" filepath="$PROJECT_DIR$/retrofit/retrofit.iml" />
+      <module fileurl="file://$PROJECT_DIR$/retrofit/retrofit.iml" filepath="$PROJECT_DIR$/retrofit/retrofit.iml" />
+      <module fileurl="file://$PROJECT_DIR$/rxjava/rxjava.iml" filepath="$PROJECT_DIR$/rxjava/rxjava.iml" />
       <module fileurl="file://$PROJECT_DIR$/rxjava/rxjava.iml" filepath="$PROJECT_DIR$/rxjava/rxjava.iml" />
       <module fileurl="file://$PROJECT_DIR$/virtualapk-host/virtualapk.iml" filepath="$PROJECT_DIR$/virtualapk-host/virtualapk.iml" />
       <module fileurl="file://$PROJECT_DIR$/virtualapk-host/virtualapk-host.iml" filepath="$PROJECT_DIR$/virtualapk-host/virtualapk-host.iml" />
+      <module fileurl="file://$PROJECT_DIR$/virtualapk-host/virtualapk-host.iml" filepath="$PROJECT_DIR$/virtualapk-host/virtualapk-host.iml" />
+      <module fileurl="file://$PROJECT_DIR$/virtualapk-plugin/virtualapk-plugin.iml" filepath="$PROJECT_DIR$/virtualapk-plugin/virtualapk-plugin.iml" />
       <module fileurl="file://$PROJECT_DIR$/virtualapk-plugin/virtualapk-plugin.iml" filepath="$PROJECT_DIR$/virtualapk-plugin/virtualapk-plugin.iml" />
     </modules>
   </component>

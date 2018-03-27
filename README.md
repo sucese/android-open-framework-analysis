@@ -1,6 +1,6 @@
-# <img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/logo.png" alt="Android Open Framwork Analysis" width="80" height="80" align="bottom"/> Android Open Framwork Analysis
+# <img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/logo.png" alt="Android Open Framework Analysis" width="80" height="80" align="bottom"/> Android Open Framwork Analysis
 
-本系列文章主要分析Android平台各类主流开源框架的源码与原理实现。
+[Android Open Framework analysis](https://github.com/guoxiaoxing/android-open-framework-analysis)项目主要用来分析Android平台主流开源框架的源码与原理实现。
 
 [![License](https://img.shields.io/github/license/guoxiaoxing/android-open-framwork-analysis.svg)](https://jitpack.io/#guoxiaoxing/android-open-framwork-analysis) 
 [![Stars](https://img.shields.io/github/stars/guoxiaoxing/android-open-framwork-analysis.svg)](https://jitpack.io/#guoxiaoxing/android-open-framwork-analysis) 
