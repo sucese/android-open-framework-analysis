@@ -70,6 +70,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 整体的流程还是比较简单的，如下所示：
 
+<img src="https://github.com/guoxiaoxing/android-open-framwork-analysis/raw/master/art/eventbus/event_bus_structure.png"/>
+
 1. 注册订阅者。
 2. 发布事件Event。
 3. 接收事件Event。
